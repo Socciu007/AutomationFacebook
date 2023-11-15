@@ -1,9 +1,10 @@
-import Hidemyacc from "./hidemyacc.js";
+import Hidemyacc from "./helpers/hidemyacc.js";
 import puppeteer from "puppeteer-core";
-import delay from "./delay.js";
-import readContent from "./readContent.js";
-import commentFacebook from "./cmtFacebook.js";
-import likeFacebook from "./likeFacebook.js";
+import delay from "./helpers/delay.js";
+import readContent from "./functions/readContent.js";
+import commentFacebook from "./functions/cmtFacebook.js";
+import likeFacebook from "./functions/likeFacebook.js";
+import shareFacebook from "./functions/shareFacebook.js";
 const hideMyAcc = new Hidemyacc();
 
 (async () => {
@@ -27,12 +28,14 @@ const hideMyAcc = new Hidemyacc();
     await page.goto("https://www.facebook.com/", {
       waitUntil: "networkidle2",
     });
-    // await readContent(page);
+    // await readContent(page,2,4);
     // await delay(3000);
     // await likeFacebook(page,3);
     // await delay(3000);
-    await commentFacebook(page,3);
-    await delay(3000);
+    // await commentFacebook(page,3);
+    // await delay(3000);
+    await shareFacebook(page,2);
+    await delay(2000)
     return {browser, page}
   });
   const openedTabs = await Promise.all(tabPromises);

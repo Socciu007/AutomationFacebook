@@ -1,0 +1,6 @@
+* if (buttonPosition && buttonPosition.y > (scrolledTimes * scrollAmount))
+ví dụ về nút like:
+- buttonPosition: kiểm tra xem có thông tin vị trí của nút "Like" không. Nếu .boundingBox() trả về null hoặc undefined (có thể xảy ra nếu phần tử không hiển thị trên trang), điều kiện này sẽ không thỏa mãn.
+- buttonPosition.y: lấy giá trị tọa độ Y của nút "Like", tức là vị trí dọc trên trang.
+- (scrolledTimes * scrollAmount): tính tổng khoảng cách mà trang đã được cuộn xuống cho đến thời điểm hiện tại. scrolledTimes là số lần đã cuộn, và scrollAmount là số pixel cuộn cho mỗi lần.
+-> buttonPosition.y > (scrolledTimes * scrollAmount): kiểm tra xem nút "Like" có nằm dưới vùng đã được cuộn qua hay không. Nếu y của nút "Like" lớn hơn tổng số pixel đã cuộn, nó có nghĩa là nút đó nằm ở phần mới của trang mà script chưa tương tác.
