@@ -5,6 +5,7 @@ import readContent from "./functions/readContent.js";
 import commentFacebook from "./functions/cmtFacebook.js";
 import likeFacebook from "./functions/likeFacebook.js";
 import shareFacebook from "./functions/shareFacebook.js";
+import upPost from "./functions/upPosts.js";
 const hideMyAcc = new Hidemyacc();
 
 (async () => {
@@ -34,8 +35,9 @@ const hideMyAcc = new Hidemyacc();
     // await delay(3000);
     // await commentFacebook(page,3);
     // await delay(3000);
-    await shareFacebook(page,2);
-    await delay(2000)
+    // await shareFacebook(page,2);
+    // await delay(2000)
+    await upPost(page);
     return {browser, page}
   });
   const openedTabs = await Promise.all(tabPromises);
