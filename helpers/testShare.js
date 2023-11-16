@@ -26,9 +26,13 @@ async function shareFacebook(page, numPosts, minDuration, maxDuration) {
         continue;
       }
       // Scroll down a random amount
-      const scrollAmount = getRandomInt(500, 1000); // For example, between 300 and 1000 pixels
-      await page.mouse.wheel({ deltaY: scrollAmount });
-      await delay(2000);
+      let elapsedWaitTime = 0;
+      const scrollAmount = getRandomInt(400, 700);
+      while (elapsedWaitTime < 0.3 * durationInMs) {
+        await page.mouse.wheel({ deltaY: scrollAmount });
+        await delay(5000);
+        elapsedWaitTime += 5000;
+      }
       // find the third div which contains share button
       const shareButtons = await page.$$(
         'div[class="x9f619 x1n2onr6 x1ja2u2z x78zum5 x2lah0s x1qughib x1qjc9v5 xozqiw3 x1q0g3np x150jy0e x1e558r4 xjkvuk6 x1iorvi4 xwrv7xz x8182xy x4cne27 xifccgj"] > div[class="x9f619 x1n2onr6 x1ja2u2z x78zum5 xdt5ytf x193iq5w xeuugli x1r8uery x1iyjqo2 xs83m0k xg83lxy x1h0ha7o x10b6aqq x1yrsyyn"]:nth-child(3)'
@@ -43,24 +47,24 @@ async function shareFacebook(page, numPosts, minDuration, maxDuration) {
           ) {
             console.log("Share button found. Clicking...");
             await button.click();
-            await delay(3000);
+            await delay(5000);
             const share = await page.$(
               'div[class="xsag5q8 xz9dl7a"] > div > div[data-visualcompletion="ignore-dynamic"]:nth-child(1)'
             );
             if (share) {
+              await delay(5000);
               await share.click();
             } else {
               console.log("Can't share");
             }
             // Thực hiện cuộn trang trong thời gian chờ
-            let elapsedWaitTime = 0;
-            while (elapsedWaitTime < waitTimeBetweenPosts) {
-              await page.mouse.wheel({ deltaY: getRandomInt(300, 600) });
+            let elapsedWaitTime1 = 0;
+            while (elapsedWaitTime1 < waitTimeBetweenPosts) {
+              await page.mouse.wheel({ deltaY: getRandomInt(400, 700) });
               await delay(5000);
-              elapsedWaitTime += 5000;
+              elapsedWaitTime1 += 5000;
             }
             postShare++;
-            break;
           }
         }
       } else {

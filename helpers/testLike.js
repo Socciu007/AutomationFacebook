@@ -22,13 +22,17 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
       if (postsLiked >= numPosts) {
         // Nếu đã like đủ bài, chỉ cuộn trang
         await page.mouse.wheel({ deltaY: getRandomInt(500, 1000) });
-        await delay(2000);
+        await delay(5000);
         continue;
       }
       // Scroll down a random amount
-      const scrollAmount = getRandomInt(500, 1000); // For example, between 300 and 1000 pixels
-      await page.mouse.wheel({ deltaY: scrollAmount });
-      await delay(2000);
+      let elapsedWaitTime = 0;
+      const scrollAmount = getRandomInt(400, 700);
+      while (elapsedWaitTime < 0.3 * durationInMs) {
+        await page.mouse.wheel({ deltaY: scrollAmount });
+        await delay(5000);
+        elapsedWaitTime += 5000;
+      }
 
       // Find all the like buttons currently visible
       const likeButtons = await page.$$(
@@ -47,12 +51,12 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
             console.log("Like button found. Clicking...");
             await button.click();
             // Thực hiện cuộn trang trong thời gian chờ
-            await delay(2000);
-            let elapsedWaitTime = 0;
-            while (elapsedWaitTime < waitTimeBetweenPosts) {
-              await page.mouse.wheel({ deltaY: getRandomInt(300, 600) });
+            await delay(5000);
+            let elapsedWaitTime1 = 0;
+            while (elapsedWaitTime1 < waitTimeBetweenPosts) {
+              await page.mouse.wheel({ deltaY: getRandomInt(400, 700) });
               await delay(5000);
-              elapsedWaitTime += 5000;
+              elapsedWaitTime1 += 5000;
             }
             postsLiked++;
           }

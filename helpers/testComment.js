@@ -40,10 +40,13 @@ async function commentFacebook(page, numPosts, minDuration, maxDuration) {
         continue;
       }
       // Scroll down a random amount
-      const scrollAmount = getRandomInt(300, 1000);
-      await page.mouse.wheel({ deltaY: scrollAmount });
-      await delay(2000);
-
+      let elapsedWaitTime = 0;
+      const scrollAmount = getRandomInt(400, 700);
+      while (elapsedWaitTime < 0.3 * durationInMs) {
+        await page.mouse.wheel({ deltaY: scrollAmount });
+        await delay(5000);
+        elapsedWaitTime += 5000;
+      }
       // Find all the comment buttons currently visible
       const commentButtons = await page.$$(
         'div[class="x9f619 x1n2onr6 x1ja2u2z x78zum5 xdt5ytf x2lah0s x193iq5w xeuugli x150jy0e x1e558r4 x10b6aqq x1yrsyyn"] > i[data-visualcompletion="css-img"]'
@@ -58,24 +61,26 @@ async function commentFacebook(page, numPosts, minDuration, maxDuration) {
             buttonPosition.y > scrolledTimes * scrollAmount
           ) {
             await button.click();
-            await delay(2000);
+            await delay(3000);
 
             const randomString = getRandomText(array);
             await page.keyboard.type(randomString);
+            await delay(5000);
             await page.keyboard.press("Enter");
+            await delay(5000);
             const closeButton = await page.$('div[role="dialog"]');
             if (closeButton) {
-              await delay(2000);
+              await delay(5000);
               await page.keyboard.press("Escape");
             } else {
               console.log("Can't close dialog");
             }
-            await delay(2000);
-            let elapsedWaitTime = 0;
-            while (elapsedWaitTime < waitTimeBetweenPosts) {
-              await page.mouse.wheel({ deltaY: getRandomInt(300, 600) });
+            await delay(5000);
+            let elapsedWaitTime1 = 0;
+            while (elapsedWaitTime1 < waitTimeBetweenPosts) {
+              await page.mouse.wheel({ deltaY: getRandomInt(400, 700) });
               await delay(5000);
-              elapsedWaitTime += 5000;
+              elapsedWaitTime1 += 5000;
             }
             postsCommented++;
           }

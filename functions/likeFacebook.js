@@ -6,8 +6,16 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
   const startTime = new Date();
   const durationInMs =
     (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // Random duration in milliseconds
+  // Tính toán thời gian chờ giữa mỗi lần chia sẻ
+  const waitTimeBetweenPosts = durationInMs / numPosts;
   try {
-    while (postsLiked < numPosts && Date.now() - startTime < durationInMs) {
+    while (Date.now() - startTime < durationInMs) {
+      if (postShare >= numPosts) {
+        // Nếu đã chia sẻ đủ bài, chỉ cuộn trang
+        await page.mouse.wheel({ deltaY: getRandomInt(500, 1000) });
+        await delay(2000);
+        continue;
+      }
       // Scroll down a random amount
       const scrollAmount = getRandomInt(500, 1000); // For example, between 300 and 1000 pixels
       await page.mouse.wheel({ deltaY: scrollAmount });
@@ -29,7 +37,7 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
           ) {
             console.log("Like button found. Clicking...");
             await button.click();
-            await delay(3000);
+             await delay(waitTimeBetweenPosts);
             postsLiked++;
             break;
           }
@@ -38,12 +46,6 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
         console.log("No like buttons found, scrolling more...");
       }
       scrolledTimes++;
-    }
-    while (postsLiked == numPosts && Date.now() - startTime < durationInMs) {
-      // Scroll down a random amount
-      const scrollAmount = getRandomInt(500, 1000); // For example, between 300 and 1000 pixels
-      await page.mouse.wheel({ deltaY: scrollAmount });
-      await delay(2000);
     }
   } catch (error) {
     console.log(error);
