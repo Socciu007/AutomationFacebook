@@ -1,13 +1,30 @@
-import delay from "../helpers/delay.js";
-import getRandomInt from "../helpers/randomInt.js";
+const delay = (timeout) =>
+  new Promise((resolve) => setTimeout(resolve, timeout));
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+await delay(1000);
+await page.goto("https://www.facebook.com/", {
+  waitUntil: "networkidle2",
+});
 async function likeFacebook(page, numPosts, minDuration, maxDuration) {
   let postsLiked = 0;
   let scrolledTimes = 0;
   const startTime = new Date();
   const durationInMs =
     (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // Random duration in milliseconds
+  // Tính toán thời gian chờ giữa mỗi lần chia sẻ
+  const waitTimeBetweenPosts = durationInMs / numPosts;
   try {
-    while (postsLiked < numPosts && Date.now() - startTime < durationInMs) {
+    while (Date.now() - startTime < durationInMs) {
+      if (postsLiked >= numPosts) {
+        // Nếu đã like đủ bài, chỉ cuộn trang
+        await page.mouse.wheel({ deltaY: getRandomInt(500, 1000) });
+        await delay(2000);
+        continue;
+      }
       // Scroll down a random amount
       const scrollAmount = getRandomInt(500, 1000); // For example, between 300 and 1000 pixels
       await page.mouse.wheel({ deltaY: scrollAmount });
@@ -29,9 +46,15 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
           ) {
             console.log("Like button found. Clicking...");
             await button.click();
-            await delay(3000);
+            // Thực hiện cuộn trang trong thời gian chờ
+            await delay(2000);
+            let elapsedWaitTime = 0;
+            while (elapsedWaitTime < waitTimeBetweenPosts) {
+              await page.mouse.wheel({ deltaY: getRandomInt(300, 600) });
+              await delay(5000);
+              elapsedWaitTime += 5000;
+            }
             postsLiked++;
-            break;
           }
         }
       } else {
@@ -39,16 +62,10 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
       }
       scrolledTimes++;
     }
-    while (postsLiked == numPosts && Date.now() - startTime < durationInMs) {
-      // Scroll down a random amount
-      const scrollAmount = getRandomInt(500, 1000); // For example, between 300 and 1000 pixels
-      await page.mouse.wheel({ deltaY: scrollAmount });
-      await delay(2000);
-    }
   } catch (error) {
     console.log(error);
   }
   console.log("Success");
 }
-
-export default likeFacebook;
+await likeFacebook(page, 5, 1, 3);
+await delay(5000);
