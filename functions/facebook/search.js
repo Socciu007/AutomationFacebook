@@ -1,5 +1,5 @@
-import delay from "../helpers/delay.js";
-import getRandomInt from "../helpers/randomInt.js";
+import delay from "../../helpers/delay.js";
+import getRandomInt from "../../helpers/randomInt.js";
 async function search(page, keyword) {
   try {
     const search = await page.$(

@@ -1,7 +1,7 @@
 import Hidemyacc from "./helpers/hidemyacc.js";
 import puppeteer from "puppeteer-core";
 import delay from "./helpers/delay.js";
-import search from "./functions/search.js";
+import search from "./functions/facebook/search.js";
 
 const hideMyAcc = new Hidemyacc();
 
