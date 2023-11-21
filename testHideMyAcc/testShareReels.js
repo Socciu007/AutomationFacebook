@@ -1,5 +1,14 @@
-import delay from "../helpers/delay.js";
-import getRandomInt from "../helpers/randomInt.js";
+const delay = (timeout) =>
+  new Promise((resolve) => setTimeout(resolve, timeout));
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+await delay(1000);
+await page.goto("https://www.facebook.com/reel/", {
+  waitUntil: "networkidle2",
+});
+
 async function clickNext(page) {
   const nextButton = await page.$x(
     "//div[1]/div/div[3]/div/div/div/div[1]/div[1]/div/div/div[1]/div/div/div/div/div/div[1]/div/div/div[3]"
@@ -9,16 +18,16 @@ async function clickNext(page) {
     await nextButton[0].click();
   }
 }
-async function saveReels(page, numsSave, minDuration, maxDuration) {
-  let saveReels = 0;
+async function shareReels(page, numsShare, minDuration, maxDuration) {
+  let shareReels = 0;
   const startTime = new Date();
   const durationInMs =
     (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // Random duration in milliseconds
-  const waitTimeBetweenPosts = durationInMs / numsSave;
+  const waitTimeBetweenPosts = durationInMs / numsShare;
   try {
     while (Date.now() - startTime < durationInMs) {
-      if (saveReels >= numsSave) {
-        // Nếu đã save đủ bài, chỉ bấm Next
+      if (shareReels >= numsShare) {
+        // Nếu đã share đủ bài, chỉ bấm Next
         const nextButton = await page.$x(
           "//div/div[2]/div/div/div/div[1]/div/div/div[3]"
         );
@@ -36,26 +45,27 @@ async function saveReels(page, numsSave, minDuration, maxDuration) {
         elapsedWaitTime += 5000;
       }
       // Find all the like buttons currently visible
-      const saveButton = await page.$x(
-        "//div[2]/div[1]/div/div[1]/div[3]/div/div/div[2]/div/div[3]"
+      const shareButton = await page.$x(
+        "//div/div[1]/div/div/div[2]/div[2]/div/div/div/div[4]"
       );
 
-      if (saveButton.length > 0) {
+      if (shareButton.length > 0) {
         // Attempt to comment on a post that hasn't been commented on yet
-        await saveButton[0].click();
+        await shareButton[0].click();
         await delay(getRandomInt(3000, 7000));
-        const save = await page.$x(
-          "//div[3]/div/div/div/div[2]/div/div/div[1]/div[1]/div/div/div/div/div/div/div[1]/div/div[1]"
+        //div/div[3]/div/div/div/div[2]/div/div/div[1]/div[1]/div/div/div/div/div/div[1]/div/div/div[1]
+        const share = await page.$x(
+          "//div/div[3]/div/div/div/div[2]/div/div/div[1]/div[1]/div/div/div/div/div/div[1]/div/div/div[1]"
         );
-        if (save.length > 0) {
-          await save[0].click();
+        if (share.length > 0) {
+          await share[0].click();
         } else {
-          console.log("Can't save");
+          console.log("Can't share");
         }
-        saveReels++;
+        shareReels++;
         await clickNext(page);
       } else {
-        console.log("No save buttons found, scrolling more...");
+        console.log("No likes buttons found, scrolling more...");
       }
     }
   } catch (error) {
@@ -63,4 +73,6 @@ async function saveReels(page, numsSave, minDuration, maxDuration) {
   }
   console.log("Success");
 }
-export default saveReels;
+
+await shareReels(page, 2, 1, 3);
+await delay(10000);

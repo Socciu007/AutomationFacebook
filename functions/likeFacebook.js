@@ -17,7 +17,7 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
         continue;
       }
       // Scroll down a random amount
-      const scrollAmount = getRandomInt(500, 1000); // For example, between 300 and 1000 pixels
+      const scrollAmount = getRandomInt(500, 1000); 
       await page.mouse.wheel({ deltaY: scrollAmount });
       await delay(2000);
 

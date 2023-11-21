@@ -1,5 +1,8 @@
-import delay from "../helpers/delay.js";
-import getRandomInt from "../helpers/randomInt.js";
+const delay = (timeout) =>
+  new Promise((resolve) => setTimeout(resolve, timeout));
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 async function clickNext(page) {
   const nextButton = await page.$x(
     "//div[1]/div/div[3]/div/div/div/div[1]/div[1]/div/div/div[1]/div/div/div/div/div/div[1]/div/div/div[3]"
@@ -9,6 +12,7 @@ async function clickNext(page) {
     await nextButton[0].click();
   }
 }
+
 async function saveReels(page, numsSave, minDuration, maxDuration) {
   let saveReels = 0;
   const startTime = new Date();
@@ -63,4 +67,5 @@ async function saveReels(page, numsSave, minDuration, maxDuration) {
   }
   console.log("Success");
 }
-export default saveReels;
+await saveReels(page, 3, 1, 3);
+await delay(10000);

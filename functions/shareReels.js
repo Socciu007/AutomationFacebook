@@ -8,6 +8,8 @@ async function clickNext(page) {
   if (nextButton.length > 0) {
     await delay(getRandomInt(5000, 7000));
     await nextButton[0].click();
+  } else {
+    console.log("Cant click next");
   }
 }
 async function shareReels(page, numsShare, minDuration, maxDuration) {
@@ -15,7 +17,7 @@ async function shareReels(page, numsShare, minDuration, maxDuration) {
   const startTime = new Date();
   const durationInMs =
     (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // Random duration in milliseconds
-  const waitTimeBetweenPosts = durationInMs / numsLike;
+  const waitTimeBetweenPosts = durationInMs / numsShare;
   try {
     while (Date.now() - startTime < durationInMs) {
       if (shareReels >= numsShare) {

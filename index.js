@@ -1,7 +1,8 @@
 import Hidemyacc from "./helpers/hidemyacc.js";
 import puppeteer from "puppeteer-core";
 import delay from "./helpers/delay.js";
-import inbox from "./functions/inbox.js";
+import search from "./functions/search.js";
+
 const hideMyAcc = new Hidemyacc();
 
 (async () => {
@@ -26,7 +27,7 @@ const hideMyAcc = new Hidemyacc();
       waitUntil: "networkidle2",
     });
 
-    await inbox(page,2)
+    await search(page,"An")
   });
   const openedTabs = await Promise.all(tabPromises);
   // await Promise.all(openedTabs.map(async (tab) => tab.browser.close()));

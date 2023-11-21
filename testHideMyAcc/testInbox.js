@@ -1,11 +1,14 @@
-import delay from "../helpers/delay.js";
+const delay = (timeout) =>
+  new Promise((resolve) => setTimeout(resolve, timeout));
+
+await delay(1000);
+await page.goto("https://www.facebook.com/", {
+  waitUntil: "networkidle2",
+});
 
 async function inbox(page, numInboxes) {
   try {
     const items = await page.$$('ul[class="x1hc1fzr"] > li');
-    if (!items) {
-      console.log("Không tìm thấy thẻ");
-    }
 
     for (let i = items.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -27,4 +30,5 @@ async function inbox(page, numInboxes) {
     console.log(error);
   }
 }
-export default inbox;
+await inbox(page, 3);
+await delay(5000);
