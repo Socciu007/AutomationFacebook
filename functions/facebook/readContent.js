@@ -1,4 +1,4 @@
-import delay from "../helpers/delay.js";
+import delay from "../../helpers/delay.js";
 async function readContent(page, minDuration, maxDuration) {
   let postContent = "";
   const startTime = new Date();

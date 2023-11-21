@@ -1,5 +1,5 @@
-import delay from "../helpers/delay.js";
-import getRandomInt from "../helpers/randomInt.js";
+import delay from "../../helpers/delay.js";
+import getRandomInt from "../../helpers/randomInt.js";
 async function likeFacebook(page, numPosts, minDuration, maxDuration) {
   let postsLiked = 0;
   let scrolledTimes = 0;

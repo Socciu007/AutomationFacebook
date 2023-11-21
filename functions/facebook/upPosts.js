@@ -1,4 +1,4 @@
-import delay from "../helpers/delay.js";
+import delay from "../../helpers/delay.js";
 import { faker } from "@faker-js/faker";
 async function upPost(page) {
     try {

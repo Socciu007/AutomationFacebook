@@ -1,6 +1,6 @@
-import delay from "../helpers/delay.js";
+import delay from "../../helpers/delay.js";
 import Randomstring from "randomstring";
-import getRandomInt from "../helpers/randomInt.js";
+import getRandomInt from "../../helpers/randomInt.js";
 async function commentFacebook(page, numPosts) {
   let postsCommented = 0;
   let scrolledTimes = 0;

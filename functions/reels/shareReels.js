@@ -1,5 +1,5 @@
-import delay from "../helpers/delay.js";
-import getRandomInt from "../helpers/randomInt.js";
+import delay from "../../helpers/delay.js";
+import getRandomInt from "../../helpers/randomInt.js";
 
 async function clickNext(page) {
   const nextButton = await page.$x(
