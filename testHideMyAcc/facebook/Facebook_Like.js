@@ -13,6 +13,7 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
   let postsLiked = 0;
   let scrolledTimes = 0;
   const startTime = new Date();
+  let count = 0;
   const durationInMs =
     (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // Random duration in milliseconds
   // Tính toán thời gian chờ giữa mỗi lần chia sẻ
@@ -26,14 +27,16 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
         continue;
       }
       // Scroll down a random amount
-      let elapsedWaitTime = 0;
       const scrollAmount = getRandomInt(400, 700);
-      while (elapsedWaitTime < 0.3 * durationInMs) {
-        await page.mouse.wheel({ deltaY: scrollAmount });
-        await delay(5000);
-        elapsedWaitTime += 5000;
+      if (count == 0) {
+        let elapsedWaitTime = 0;
+        while (elapsedWaitTime < 0.3 * durationInMs) {
+          await page.mouse.wheel({ deltaY: scrollAmount });
+          await delay(5000);
+          elapsedWaitTime += 5000;
+        }
       }
-
+      count++;
       // Find all the like buttons currently visible
       const likeButtons = await page.$$(
         'span[class= "x3nfvp2"] > i[data-visualcompletion="css-img"]'
@@ -48,10 +51,15 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
             buttonPosition &&
             buttonPosition.y > scrolledTimes * scrollAmount
           ) {
-            console.log("Like button found. Clicking...");
-            await button.click();
-            // Thực hiện cuộn trang trong thời gian chờ
+            await button.scrollIntoView({
+              block: "center", // Đảm bảo button nằm ở trung tâm theo chiều dọc
+              inline: "center", // Đảm bảo button nằm ở trung tâm theo chiều ngang
+              behavior: "smooth", // Hiệu ứng cuộn mượt mà
+            }),
             await delay(5000);
+            await button.click();
+            await delay(7000);
+            // Thực hiện cuộn trang trong thời gian chờ
             let elapsedWaitTime1 = 0;
             while (elapsedWaitTime1 < waitTimeBetweenPosts) {
               await page.mouse.wheel({ deltaY: getRandomInt(400, 700) });
@@ -61,15 +69,12 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
             postsLiked++;
           }
         }
-      } else {
-        console.log("No like buttons found, scrolling more...");
       }
       scrolledTimes++;
     }
   } catch (error) {
     console.log(error);
   }
-  console.log("Success");
 }
 await likeFacebook(page, 5, 1, 3);
 await delay(5000);

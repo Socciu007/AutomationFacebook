@@ -1,4 +1,9 @@
-import delay from "../../helpers/delay.js";
+const delay = (timeout) =>
+  new Promise((resolve) => setTimeout(resolve, timeout));
+await delay(1000);
+await page.goto("https://www.facebook.com/friends/suggestions", {
+  waitUntil: "networkidle2",
+});
 async function addFriend(page, numFriends) {
   let numsAdd = 0;
   const addButtons = await page.$$(
@@ -6,7 +11,6 @@ async function addFriend(page, numFriends) {
   );
 
   if (addButtons.length === 0) {
-    console.log("Không tìm thấy button nào.");
     return;
   }
   while (numsAdd < numFriends) {
@@ -17,7 +21,6 @@ async function addFriend(page, numFriends) {
     const { y } = await addButton.boundingBox();
     const screenHeight = await page.evaluate(() => window.innerHeight);
     const scrollY = y - screenHeight / 6;
-
     // Scroll tới vị trí của button trước khi click
     await page.evaluate((scrollY) => {
       window.scrollTo({ top: scrollY, behavior: "smooth" });
@@ -25,9 +28,7 @@ async function addFriend(page, numFriends) {
     await delay(5000);
     await addButton.click();
     numsAdd++;
-    console.log("Add successfully");
   }
-  console.log(`Đã thêm ${numsAdd} người bạn.`);
 }
-
-export default addFriend;
+await addFriend(page, 3);
+await delay(30000);

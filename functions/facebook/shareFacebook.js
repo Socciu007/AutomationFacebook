@@ -22,6 +22,20 @@ async function shareFacebook(page, numsPosts) {
             buttonPosition.y > scrolledTimes * scrollAmount
           ) {
             console.log("Share button found. Clicking...");
+            // Tính toán vị trí cần scroll
+            const { y } = await button.boundingBox();
+            const screenHeight = await page.evaluate(() => window.innerHeight);
+            const scrollY = y - screenHeight / 6;
+            // Scroll tới vị trí của button trước khi click
+            await page.evaluate((scrollY) => {
+              window.scrollTo({ top: scrollY, behavior: "smooth" });
+            }, scrollY);
+            await button.scrollIntoView({
+              block: "center", // Đảm bảo button nằm ở trung tâm theo chiều dọc
+              inline: "center", // Đảm bảo button nằm ở trung tâm theo chiều ngang
+              behavior: "smooth", // Hiệu ứng cuộn mượt mà
+            }),
+            await delay(3000);
             await button.click();
             await delay(3000);
             const share = await page.$(

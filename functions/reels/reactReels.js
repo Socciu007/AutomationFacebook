@@ -1,32 +1,8 @@
-const delay = (timeout) =>
-  new Promise((resolve) => setTimeout(resolve, timeout));
-
-const array = [
-  "Xin chào",
-  "Hello",
-  "Hay quá",
-  "Sản phẩm dùng tốt quá",
-  "Lạnh gheee",
-  "Xuất sắc",
-];
-
-function getRandomText(array) {
-  var randomIndex = Math.floor(Math.random() * array.length);
-  return array[randomIndex];
-}
-
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-await delay(1000);
-await page.goto("https://www.facebook.com/", {
-  waitUntil: "networkidle2",
-});
-
+import delay from "../../helpers/delay.js";
+import getRandomInt from "../../helpers/randomInt.js";
 async function clickNext(page) {
   const nextButton = await page.$x(
-    "//div[2]/div/div/div[1]/div/div/div/div/div[2]/div[1]/div/div/div[3]"
+    "//div[1]/div/div[3]/div/div/div/div[1]/div[1]/div/div/div[1]/div/div/div/div/div/div[1]/div/div/div[3]"
   );
   if (nextButton.length > 0) {
     await delay(getRandomInt(5000, 7000));
@@ -34,18 +10,20 @@ async function clickNext(page) {
   }
 }
 async function reactReels(page, numsLike, minDuration, maxDuration) {
-  const video = await page.$('a[aria-label="Video"]');
+  const video = await page.$('a[href="https://www.facebook.com/watch/"]');
   if (video) {
     await delay(3000);
     await video.click();
   }
   await delay(3000);
-  const reel = await page.$('a[href="/reel/"]');
+  const reel = await page.$(
+    'a[href="/reel/"]'
+  );
   if (reel) {
     await delay(3000);
     await reel.click();
-  }
-  await delay(3000);
+  } 
+  await delay(3000)
   let likeReels = 0;
   const startTime = new Date();
   const durationInMs =
@@ -91,6 +69,8 @@ async function reactReels(page, numsLike, minDuration, maxDuration) {
               await delay(5000);
               await page.keyboard.press("Enter");
               await delay(3000);
+            } else {
+              console.log("không comment được");
             }
           } else {
             const commentButton = await page.$x(
@@ -108,18 +88,15 @@ async function reactReels(page, numsLike, minDuration, maxDuration) {
               await delay(5000);
             }
           }
+        } else {
+          console.log("không comment");
         }
         likeReels++;
-        let elapsedWaitTime1 = 0;
-        while (elapsedWaitTime1 < waitTimeBetweenPosts) {
-          await clickNext(page);
-          elapsedWaitTime1 += 5000;
-        }
+        await clickNext(page);
       }
     }
   } catch (error) {
     console.log(error);
   }
 }
-await reactReels(page, 3, 1, 3);
-await delay(30000);
+export default reactReels;

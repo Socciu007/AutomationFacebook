@@ -1,7 +1,7 @@
 import Hidemyacc from "./helpers/hidemyacc.js";
 import puppeteer from "puppeteer-core";
 import delay from "./helpers/delay.js";
-import addFriend from "./functions/facebook/addFriend.js";
+import reactReels from "./functions/reels/reactReels.js";
 
 const hideMyAcc = new Hidemyacc();
 
@@ -23,11 +23,11 @@ const hideMyAcc = new Hidemyacc();
     });
     const page = await browser.newPage();
     await delay(1000);
-    await page.goto("https://www.facebook.com/friends/suggestions", {
+    await page.goto("https://www.facebook.com/", {
       waitUntil: "networkidle2",
     });
 
-    await addFriend(page,3)
+    await reactReels(page,3,1,3)
   });
   const openedTabs = await Promise.all(tabPromises);
   // await Promise.all(openedTabs.map(async (tab) => tab.browser.close()));
