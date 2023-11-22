@@ -23,7 +23,6 @@ async function inbox(page, numInboxes) {
       await page.keyboard.press("Enter");
       await delay(5000);
       await page.click('svg[class="xvijh9v xhhsvwb x1ty9z65 xgzva0m"]');
-      console.log("Inbox thành công");
       // await page.keyboard.press("Enter");
     }
   } catch (error) {

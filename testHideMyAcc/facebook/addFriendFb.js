@@ -1,10 +1,11 @@
 const delay = (timeout) =>
   new Promise((resolve) => setTimeout(resolve, timeout));
 await delay(1000);
-await page.goto("https://www.facebook.com/friends/suggestions", {
+await page.goto("https://www.facebook.com/", {
   waitUntil: "networkidle2",
 });
 async function addFriend(page, numFriends) {
+  await page.click('a[href="/friends/"]');
   let numsAdd = 0;
   const addButtons = await page.$$(
     'div[class="x1n2onr6 x1ja2u2z x78zum5 x2lah0s xl56j7k x6s0dn4 xozqiw3 x1q0g3np xi112ho x17zwfj4 x585lrc x1403ito x972fbf xcfux6l x1qhh985 xm0m39n x9f619 xn6708d x1ye3gou xtvsq51 x1r1pt67"]'

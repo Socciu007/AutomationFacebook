@@ -52,6 +52,7 @@ async function commentFacebook(page, numPosts, minDuration, maxDuration) {
       }
       count++;
       // Find all the comment buttons currently visible
+      try {
       const commentButtons = await page.$$(
         'div[class="x9f619 x1n2onr6 x1ja2u2z x78zum5 xdt5ytf x2lah0s x193iq5w xeuugli x150jy0e x1e558r4 x10b6aqq x1yrsyyn"] > i[data-visualcompletion="css-img"]'
       );
@@ -94,11 +95,29 @@ async function commentFacebook(page, numPosts, minDuration, maxDuration) {
           }
         }
       }
+      } catch (error) {
+        logErrors.push({
+          error: "Error while processing comment button",
+          detail: error.message,
+        });
+      }
+
       scrolledTimes++;
     }
   } catch (error) {
-    console.log(error);
+    logErrors.push({
+      error: "Unexpected error",
+      detail: error.message,
+    });
   }
 }
-await commentFacebook(page, 5, 1, 3);
-await delay(5000);
+try {
+  await commentFacebook(page, 5, 1, 3);
+  await delay(5000);
+} catch (error) {
+  logErrors.push({
+    error: "Error during commentFacebook execution",
+    detail: error.message,
+  });
+}
+return logErrors;
