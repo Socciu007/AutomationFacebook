@@ -11,43 +11,51 @@ await page.goto("https://www.facebook.com/", {
 });
 
 async function clickNext(page) {
-  try {
-    const nextButton = await page.$x(
-      "//div[2]/div/div/div[1]/div/div/div/div/div[2]/div[1]/div/div/div[3]"
-    );
-    if (nextButton.length > 0) {
-      await delay(getRandomInt(5000, 7000));
+  const nextButton = await page.$x(
+    "//div[2]/div/div/div[1]/div/div/div/div/div[2]/div[1]/div/div/div[3]"
+  );
+  if (nextButton.length > 0) {
+    await delay(getRandomInt(5000, 7000));
+    try {
       await nextButton[0].click();
+    } catch (error) {
+      logErrors.push({
+        error: "Error while clicking next button",
+        detail: error.message,
+      });
     }
-  } catch (error) {
+  } else {
     logErrors.push({
-      error: "Can't find next button",
-      detail: error.message,
+      error: "Error while finding next button",
+      detail: "Next button not found. Please check your selector.",
     });
   }
 }
 let logErrors = [];
 
 async function likeReels(page, numsLike, minDuration, maxDuration) {
-  try {
-    const video = await page.$('a[aria-label="Video"]');
-    if (video) {
-      await delay(3000);
-      await video.click();
-    }
+  const video = await page.$('a[aria-label="Video"]');
+  if (video) {
     await delay(3000);
-    const reel = await page.$('a[href="/reel/"]');
-    if (reel) {
-      await delay(3000);
-      await reel.click();
-    }
-    await delay(3000);
-  } catch (error) {
+    await video.click();
+  } else {
     logErrors.push({
-      error: "Can't find reels",
-      detail: error.message,
+      error: "Error while finding video button",
+      detail: "Video button not found. Please check your selector.",
     });
   }
+  await delay(3000);
+  const reel = await page.$('a[href="/reel/"]');
+  if (reel) {
+    await delay(3000);
+    await reel.click();
+  } else {
+    logErrors.push({
+      error: "Error while finding reel button",
+      detail: "Reels button not found. Please check your selector.",
+    });
+  }
+  await delay(3000);
   let likeReels = 0;
   let startTime = new Date();
   let count = 0;
@@ -78,14 +86,15 @@ async function likeReels(page, numsLike, minDuration, maxDuration) {
         }
       }
       count++;
-      try {
-        // Find all the like buttons currently visible
-        const likeButton = await page.$x(
-          "//div[2]/div[2]/div/div/div/div[2]/div/div/div/div[1]/div"
-        );
 
-        if (likeButton.length > 0) {
-          // Attempt to comment on a post that hasn't been commented on yet
+      // Find all the like buttons currently visible
+      const likeButton = await page.$x(
+        "//div[2]/div[2]/div/div/div/div[2]/div/div/div/div[1]/div"
+      );
+
+      if (likeButton.length > 0) {
+        // Attempt to comment on a post that hasn't been commented on yet
+        try {
           await likeButton[0].click();
           await delay(getRandomInt(3000, 7000));
           likeReels++;
@@ -94,11 +103,16 @@ async function likeReels(page, numsLike, minDuration, maxDuration) {
             await clickNext(page);
             elapsedWaitTime1 += 5000;
           }
+        } catch (error) {
+          logErrors.push({
+            error: "Error while processing like button",
+            detail: error.message,
+          });
         }
-      } catch (error) {
+      } else {
         logErrors.push({
-          error: "Error while processing like button",
-          detail: error.message,
+          error: "Error while finding like button",
+          detail: "Like button not found. Please check your selector.",
         });
       }
     }

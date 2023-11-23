@@ -10,18 +10,23 @@ await page.goto("https://www.facebook.com/reel/", {
 });
 
 async function clickNext(page) {
-  try {
-    const nextButton = await page.$x(
-      "//div[1]/div/div[3]/div/div/div/div[1]/div[1]/div/div/div[1]/div/div/div/div/div/div[1]/div/div/div[3]"
-    );
-    if (nextButton.length > 0) {
-      await delay(getRandomInt(5000, 7000));
+  const nextButton = await page.$x(
+    "//div[2]/div/div/div[1]/div/div/div/div/div[2]/div[1]/div/div/div[3]"
+  );
+  if (nextButton.length > 0) {
+    await delay(getRandomInt(5000, 7000));
+    try {
       await nextButton[0].click();
+    } catch (error) {
+      logErrors.push({
+        error: "Error while clicking next button",
+        detail: error.message,
+      });
     }
-  } catch (error) {
+  } else {
     logErrors.push({
-      error: "Error while clicking next button",
-      detail: error.message,
+      error: "Error while finding next button",
+      detail: "Next button not found. Please check your selector.",
     });
   }
 }
@@ -29,6 +34,7 @@ let logErrors = [];
 async function shareReels(page, numsShare, minDuration, maxDuration) {
   let shareReels = 0;
   const startTime = new Date();
+  let count = 0;
   const durationInMs =
     (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // Random duration in milliseconds
   const waitTimeBetweenPosts = durationInMs / numsShare;
@@ -36,22 +42,18 @@ async function shareReels(page, numsShare, minDuration, maxDuration) {
     while (Date.now() - startTime < durationInMs) {
       if (shareReels >= numsShare) {
         // Nếu đã share đủ bài, chỉ bấm Next
-        const nextButton = await page.$x(
-          "//div/div[2]/div/div/div/div[1]/div/div/div[3]"
-        );
-        if (nextButton.length > 0) {
-          await delay(getRandomInt(5000, 10000));
-          await nextButton[0].click();
-        }
-        await delay(getRandomInt(10000, 15000));
+        await clickNext(page);
         continue;
       }
-      let elapsedWaitTime = 0;
-      while (elapsedWaitTime < waitTimeBetweenPosts / 2) {
-        await clickNext(page);
-        await delay(getRandomInt(3000, 7000));
-        elapsedWaitTime += 5000;
+      if (count == 0) {
+        let elapsedWaitTime = 0;
+        while (elapsedWaitTime < durationInMs * 0.3) {
+          await clickNext(page);
+          await delay(getRandomInt(3000, 7000));
+          elapsedWaitTime += 5000;
+        }
       }
+      count++;
       try {
         // Find all the like buttons currently visible
         const shareButton = await page.$x(
@@ -68,9 +70,23 @@ async function shareReels(page, numsShare, minDuration, maxDuration) {
           );
           if (share.length > 0) {
             await share[0].click();
+          } else {
+            logErrors.push({
+              error: "Error while finding share button",
+              detail: "Share button not found. Please check your selector.",
+            });
           }
           shareReels++;
-          await clickNext(page);
+          let elapsedWaitTime1 = 0;
+          while (elapsedWaitTime1 < waitTimeBetweenPosts) {
+            await clickNext(page);
+            elapsedWaitTime1 += 5000;
+          }
+        } else {
+          logErrors.push({
+            error: "Error while finding share button",
+            detail: "Share button not found. Please check your selector.",
+          });
         }
       } catch (error) {
         logErrors.push({

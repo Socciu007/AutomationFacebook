@@ -19,6 +19,7 @@ async function addFriend(page, numFriends) {
       let randomIndex = Math.floor(Math.random() * addButtons.length);
       let addButton = addButtons[randomIndex];
       await delay(5000);
+      
       await addButton.click();
       await delay(5000);
       numsAdd++;

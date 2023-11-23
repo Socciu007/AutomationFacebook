@@ -19,6 +19,11 @@ async function search(page, keyword) {
       const scrollAmount = getRandomInt(500, 1000);
       await page.mouse.wheel({ deltaY: scrollAmount });
       await delay(getRandomInt(3000, 7000));
+    } else {
+      logErrors.push({
+        error: "Error while finding search button",
+        detail: "Search button not found. Please check your selector.",
+      });
     }
   } catch (error) {
     logErrors.push({

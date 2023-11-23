@@ -9,7 +9,12 @@ let logErrors = [];
 async function inbox(page, numInboxes) {
   try {
     const items = await page.$$('ul[class="x1hc1fzr"] > li');
-
+    if(items == null ) {
+      logErrors.push({
+        error: "Error while finding person to inbox",
+        detail: "Person not found. Please check your selector.",
+      });
+    }
     for (let i = items.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [items[i], items[j]] = [items[j], items[i]];
@@ -21,7 +26,14 @@ async function inbox(page, numInboxes) {
       await delay(5000);
       await page.keyboard.press("Enter");
       await delay(5000);
-      await page.click('svg[class="xvijh9v xhhsvwb x1ty9z65 xgzva0m"]');
+      const exit = await page.$('svg[class="xvijh9v xhhsvwb x1ty9z65 xgzva0m"]');
+      if(exit == null) {
+        logErrors.push({
+          error: "Error while finding exit button",
+          detail: "Exit button not found. Please check your selector.",
+        });
+      }
+      await exit.click();
       // await page.keyboard.press("Enter");
     }
   } catch (error) {
