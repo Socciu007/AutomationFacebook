@@ -9,6 +9,7 @@ await delay(3000);
 await page.goto("https://www.facebook.com/", {
   waitUntil: "networkidle2",
 });
+let logErrors = [];
 async function readContent(page, minDuration, maxDuration) {
   const startTime = new Date();
   const durationInMs =
@@ -35,3 +36,4 @@ try {
     detail: error.message,
   });
 }
+return logErrors;

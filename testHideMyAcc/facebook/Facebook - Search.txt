@@ -3,6 +3,7 @@ const delay = (timeout) =>
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+let logErrors = [];
 async function search(page, keyword) {
   try {
     const search = await page.$(
@@ -18,11 +19,20 @@ async function search(page, keyword) {
       const scrollAmount = getRandomInt(500, 1000);
       await page.mouse.wheel({ deltaY: scrollAmount });
       await delay(getRandomInt(3000, 7000));
-    } else {
-      console.log("can't search");
     }
   } catch (error) {
-    console.log(error);
+    logErrors.push({
+      error: "Error while processing search button",
+      detail: error.message,
+    });
   }
 }
-await search(page, "Anh");
+try {
+  await search(page, "Anh");
+} catch (error) {
+  logErrors.push({
+    error: "Error during search execution",
+    detail: error.message,
+  });
+}
+return logErrors;

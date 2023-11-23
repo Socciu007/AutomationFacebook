@@ -23,6 +23,7 @@ await delay(1000);
 await page.goto("https://www.facebook.com/", {
   waitUntil: "networkidle2",
 });
+let logErrors = [];
 async function commentFacebook(page, numPosts, minDuration, maxDuration) {
   let postsCommented = 0;
   let scrolledTimes = 0;

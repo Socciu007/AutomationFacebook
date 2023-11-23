@@ -5,7 +5,7 @@ await delay(1000);
 await page.goto("https://www.facebook.com/", {
   waitUntil: "networkidle2",
 });
-
+let logErrors = [];
 async function inbox(page, numInboxes) {
   try {
     const items = await page.$$('ul[class="x1hc1fzr"] > li');
@@ -14,7 +14,6 @@ async function inbox(page, numInboxes) {
       const j = Math.floor(Math.random() * (i + 1));
       [items[i], items[j]] = [items[j], items[i]];
     }
-
     for (let i = 0; i < numInboxes; i++) {
       await items[i].click();
       await delay(5000);
@@ -26,8 +25,19 @@ async function inbox(page, numInboxes) {
       // await page.keyboard.press("Enter");
     }
   } catch (error) {
-    console.log(error);
+    logErrors.push({
+      error: "Error while processing inbox button",
+      detail: error.message,
+    });
   }
 }
-await inbox(page, 3);
-await delay(5000);
+try {
+  await inbox(page, 3);
+  await delay(5000);
+} catch (error) {
+  logErrors.push({
+    error: "Error during inbox execution",
+    detail: error.message,
+  });
+}
+return logErrors;
