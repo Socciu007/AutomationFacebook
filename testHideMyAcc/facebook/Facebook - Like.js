@@ -16,10 +16,9 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
   const startTime = new Date();
   let count = 0;
   const durationInMs =
-    (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // Random duration in milliseconds
+    (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // chọn 1 mốc thời gian để dừng trong khoảng min và max
   // Tính toán thời gian chờ giữa mỗi lần chia sẻ
   const waitTimeBetweenPosts = durationInMs / numPosts;
-  try {
     while (Date.now() - startTime < durationInMs) {
       if (postsLiked >= numPosts) {
         // Nếu đã like đủ bài, chỉ cuộn trang
@@ -27,7 +26,7 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
         await delay(5000);
         continue;
       }
-      // Scroll down a random amount
+      // Lướt random một khoảng thời gian, tránh việc vừa vào đã thực hiện chức năng
       const scrollAmount = getRandomInt(400, 700);
       if (count == 0) {
         let elapsedWaitTime = 0;
@@ -38,16 +37,14 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
         }
       }
       count++;
-      try {
-        // Find all the like buttons currently visible
+        // Tìm nút like ở page để click
         const likeButtons = await page.$$(
           'span[class= "x3nfvp2"] > i[data-visualcompletion="css-img"]'
         );
 
         if (likeButtons.length > 0) {
-          // Attempt to like a post that hasn't been liked yet
           for (const button of likeButtons) {
-            // Ensure you're not clicking a button that's too far up (from previous posts)
+            // xem giải thích file explain
             const buttonPosition = await button.boundingBox();
             if (
               buttonPosition &&
@@ -58,7 +55,7 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
                 inline: "center", // Đảm bảo button nằm ở trung tâm theo chiều ngang
                 behavior: "smooth", // Hiệu ứng cuộn mượt mà
               }),
-                await delay(5000);
+              await delay(5000);
               await button.click();
               await delay(7000);
               // Thực hiện cuộn trang trong thời gian chờ
@@ -72,20 +69,8 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
             }
           }
         }
-      } catch (error) {
-        logErrors.push({
-          error: "Error while processing like button",
-          detail: error.message,
-        });
-      }
       scrolledTimes++;
     }
-  } catch (error) {
-    logErrors.push({
-      error: "Unexpected error",
-      detail: error.message,
-    });
-  }
 }
 try {
   await likeFacebook(page, 5, 1, 3);
@@ -96,4 +81,4 @@ try {
     detail: error.message,
   });
 }
-return logErrors;
+console.log(logErrors);

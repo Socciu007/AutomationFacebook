@@ -15,36 +15,42 @@ async function clickNext(page) {
   );
   if (nextButton.length > 0) {
     await delay(getRandomInt(5000, 7000));
-    try {
-      await nextButton[0].click();
-    } catch (error) {
-      logErrors.push({
-        error: "Error while clicking next button",
-        detail: error.message,
-      });
-    }
+    await nextButton[0].click();
   } else {
-    logErrors.push({
-      error: "Error while finding next button",
-      detail: "Next button not found. Please check your selector.",
-    });
+    throw new Error("Next button not found. Please check your selector.");
   }
 }
 let logErrors = [];
 async function shareReels(page, numsShare, minDuration, maxDuration) {
+  // click video
+  const video = await page.$('a[aria-label="Video"]');
+  if (video == null) {
+    throw new Error("Video button not found. Please check your selector.");
+  }
+  await delay(3000);
+  await video.click();
+  await delay(3000);
+  // click reels
+  const reel = await page.$('a[href="/reel/"]');
+  if (reel == null) {
+    throw new Error("Reels button not found. Please check your selector.");
+  }
+  await delay(3000);
+  await reel.click();
+  await delay(3000);
   let shareReels = 0;
   const startTime = new Date();
   let count = 0;
   const durationInMs =
-    (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // Random duration in milliseconds
+    (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // chọn 1 mốc thời gian để dừng trong khoảng min và max
   const waitTimeBetweenPosts = durationInMs / numsShare;
-  try {
     while (Date.now() - startTime < durationInMs) {
       if (shareReels >= numsShare) {
         // Nếu đã share đủ bài, chỉ bấm Next
         await clickNext(page);
         continue;
       }
+       // thời gian đầu sẽ lướt một thời gian, hạn chế việc vừa vào đã thực hiện chức năng
       if (count == 0) {
         let elapsedWaitTime = 0;
         while (elapsedWaitTime < durationInMs * 0.3) {
@@ -54,53 +60,37 @@ async function shareReels(page, numsShare, minDuration, maxDuration) {
         }
       }
       count++;
-      try {
-        // Find all the like buttons currently visible
+        // Tìm nút share để click
         const shareButton = await page.$x(
           "//div/div[1]/div/div/div[2]/div[2]/div/div/div/div[4]"
         );
 
         if (shareButton.length > 0) {
-          // Attempt to comment on a post that hasn't been commented on yet
           await shareButton[0].click();
           await delay(getRandomInt(3000, 7000));
-          //div/div[3]/div/div/div/div[2]/div/div/div[1]/div[1]/div/div/div/div/div/div[1]/div/div/div[1]
           const share = await page.$x(
             "//div/div[3]/div/div/div/div[2]/div/div/div[1]/div[1]/div/div/div/div/div/div[1]/div/div/div[1]"
           );
           if (share.length > 0) {
             await share[0].click();
           } else {
-            logErrors.push({
-              error: "Error while finding share button",
-              detail: "Share button not found. Please check your selector.",
-            });
+            throw new Error(
+              "Share options not found. Please check your selector."
+            );
           }
           shareReels++;
+          // sau khi share thì click next, đảm bảo share đồng đều trong khoảng thời gian
           let elapsedWaitTime1 = 0;
           while (elapsedWaitTime1 < waitTimeBetweenPosts) {
             await clickNext(page);
             elapsedWaitTime1 += 5000;
           }
         } else {
-          logErrors.push({
-            error: "Error while finding share button",
-            detail: "Share button not found. Please check your selector.",
-          });
+          throw new Error(
+            "Share button not found. Please check your selector."
+          );
         }
-      } catch (error) {
-        logErrors.push({
-          error: "Error while processing share reels button",
-          detail: error.message,
-        });
-      }
     }
-  } catch (error) {
-    logErrors.push({
-      error: "Unexpected Errors",
-      detail: error.message,
-    });
-  }
 }
 try {
   await shareReels(page, 2, 1, 3);
@@ -111,4 +101,4 @@ try {
     detail: error.message,
   });
 }
-return logErrors;
+console.log(logErrors)

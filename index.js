@@ -1,9 +1,9 @@
 import Hidemyacc from "./helpers/hidemyacc.js";
 import puppeteer from "puppeteer-core";
 import delay from "./helpers/delay.js";
-import readNotifications from "./functions/facebook/readNotifications.js";
+// import likeFacebook from "./functions/facebook/likeFacebook.js";
 
-
+import saveReels from "./functions/reels/saveReels.js";
 const hideMyAcc = new Hidemyacc();
 
 (async () => {
@@ -27,8 +27,17 @@ const hideMyAcc = new Hidemyacc();
     await page.goto("https://www.facebook.com/", {
       waitUntil: "networkidle2",
     });
-
-    await readNotifications(page,2)
+    let err = [];
+    try {
+      await saveReels(page, 3, 1, 3);
+      await delay(10000);
+    } catch (error) {
+      err.push({
+        error: "Error during save reels execution",
+        detail: error.message
+      })
+    }
+    console.log(err)
   });
   const openedTabs = await Promise.all(tabPromises);
   // await Promise.all(openedTabs.map(async (tab) => tab.browser.close()));
