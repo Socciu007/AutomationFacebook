@@ -1,33 +1,14 @@
 import delay from "../../helpers/delay.js";
+import getRandomInt from "../../helpers/randomInt.js";
 async function readContent(page, minDuration, maxDuration) {
-  let postContent = "";
   const startTime = new Date();
   const durationInMs =
-    (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // Random duration in milliseconds
-  try {
-    while (Date.now() - startTime < durationInMs) {
-      try {
-        // lấy nội dung của post
-        postContent = await page.$eval(
-          'div[data-ad-preview="message"]',
-          (el) => el.innerText
-        );
-        if (postContent) {
-          // console.log(postContent);
-          // Reset postContent to read the next post in the next iteration
-          postContent = "";
-        }
-        // Scroll down
-        await page.mouse.wheel({ deltaY: 300 });
-        await delay(2000);
-      } catch (error) {
-        console.log("Content not found, scrolling...");
-        await page.mouse.wheel({ deltaY: 300 });
-        await delay(2000);
-      }
-    }
-  } catch (error) {
-    console.log(error);
+    (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // chọn 1 mốc thời gian để dừng trong khoảng min và max
+  while (Date.now() - startTime < durationInMs) {
+    // Scroll down a random amount
+    const scrollAmount = getRandomInt(500, 1000);
+    await page.mouse.wheel({ deltaY: scrollAmount });
+    await delay(5000);
   }
 }
 export default readContent;

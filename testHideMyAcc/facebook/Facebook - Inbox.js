@@ -1,10 +1,15 @@
 const delay = (timeout) =>
   new Promise((resolve) => setTimeout(resolve, timeout));
 
-await delay(1000);
-await page.goto("https://www.facebook.com/", {
-  waitUntil: "networkidle2",
-});
+async function navigateToUrl(page, url) {
+  try {
+    await page.goto(url, {
+      waitUntil: "networkidle2",
+    });
+  } catch (error) {
+    throw new Error(`Error navigating to URL: ${url}. ${error.message}`);
+  }
+}
 let logErrors = [];
 async function inbox(page, numInboxes) {
   const items = await page.$$('ul[class="x1hc1fzr"] > li');
@@ -31,6 +36,8 @@ async function inbox(page, numInboxes) {
   }
 }
 try {
+  const url = "https://www.facebook.com/";
+  await navigateToUrl(page, url);
   await inbox(page, 3);
 } catch (error) {
   logErrors.push({
@@ -38,4 +45,4 @@ try {
     detail: error.message,
   });
 }
-console.log(logErrors);
+return logErrors;

@@ -1,15 +1,22 @@
 const delay = (timeout) =>
   new Promise((resolve) => setTimeout(resolve, timeout));
 
+let logErrors = [];
+
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-await delay(3000);
-await page.goto("https://www.facebook.com/", {
-  waitUntil: "networkidle2",
-});
-let logErrors = [];
+async function navigateToUrl(page, url) {
+  try {
+    await page.goto(url, {
+      waitUntil: "networkidle2",
+    });
+  } catch (error) {
+    throw new Error(`Error navigating to URL: ${url}. ${error.message}`);
+  }
+}
+
 async function readContent(page, minDuration, maxDuration) {
   const startTime = new Date();
   const durationInMs =
@@ -22,6 +29,8 @@ async function readContent(page, minDuration, maxDuration) {
   }
 }
 try {
+  const url = "https://www.facebook.com/";
+  await navigateToUrl(page, url);
   await readContent(page, 1, 2);
 } catch (error) {
   logErrors.push({
@@ -29,4 +38,4 @@ try {
     detail: error.message,
   });
 }
-console.log(logErrors);
+return logErrors;

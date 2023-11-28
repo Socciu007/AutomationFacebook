@@ -5,10 +5,16 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-await delay(1000);
-await page.goto("https://www.facebook.com/", {
-  waitUntil: "networkidle2",
-});
+async function navigateToUrl(page, url) {
+  try {
+    await page.goto(url, {
+      waitUntil: "networkidle2",
+    });
+  } catch (error) {
+    throw new Error(`Error navigating to URL: ${url}. ${error.message}`);
+  }
+}
+
 let logErrors = [];
 async function addFriend(page, numFriends) {
   // click friends
@@ -46,6 +52,8 @@ async function addFriend(page, numFriends) {
   }
 }
 try {
+  const url = "https://www.facebook.com/";
+  await navigateToUrl(page, url);
   await addFriend(page, 3);
 } catch (error) {
   logErrors.push({
@@ -53,4 +61,4 @@ try {
     detail: error.message,
   });
 }
-console.log(logErrors);
+return logErrors;

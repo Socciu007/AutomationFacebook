@@ -18,11 +18,15 @@ function getRandomText(array) {
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
-await delay(1000);
-await page.goto("https://www.facebook.com/", {
-  waitUntil: "networkidle2",
-});
+async function navigateToUrl(page, url) {
+  try {
+    await page.goto(url, {
+      waitUntil: "networkidle2",
+    });
+  } catch (error) {
+    throw new Error(`Error navigating to URL: ${url}. ${error.message}`);
+  }
+}
 let logErrors = [];
 async function clickNext(page) {
   const nextButton = await page.$x(
@@ -56,6 +60,7 @@ async function reactReels(page, numsLike, minDuration, maxDuration) {
   let count = 0;
   const durationInMs =
     (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // chọn 1 mốc thời gian để dừng trong khoảng min và max
+  // Tính toán thời gian chờ giữa mỗi lần like
   const waitTimeBetweenPosts = durationInMs / numsLike;
   while (Date.now() - startTime < durationInMs) {
     if (likeReels >= numsLike) {
@@ -63,12 +68,12 @@ async function reactReels(page, numsLike, minDuration, maxDuration) {
       await clickNext(page);
       continue;
     }
-       // thời gian đầu sẽ lướt một thời gian, hạn chế việc vừa vào đã thực hiện chức năng
+    // thời gian đầu sẽ lướt một thời gian, hạn chế việc vừa vào đã thực hiện chức năng
     if (count == 0) {
       let elapsedWaitTime = 0;
-      while (elapsedWaitTime < durationInMs * 0.3) {
+      while (elapsedWaitTime < durationInMs * 0.1) {
         await clickNext(page);
-        await delay(getRandomInt(3000, 7000));
+        await delay(getRandomInt(3000, 5000));
         elapsedWaitTime += 5000;
       }
     }
@@ -94,16 +99,17 @@ async function reactReels(page, numsLike, minDuration, maxDuration) {
             await delay(5000);
             await page.keyboard.press("Enter");
             await delay(3000);
-          } else {
-            throw new Error(
-              "Comment area not found. Please check your selector."
-            );
           }
         } else {
           // TH2: comment ngay khi lướt
           const commentButton = await page.$x(
             "//div[1]/div[1]/div/div/div[2]/div[2]/div/div/div/div[3]"
           );
+          if (commentButton == null) {
+            throw new Error(
+              "Comment button not found. Please check your selector."
+            );
+          }
           await commentButton[0].click();
           await delay(2000);
           const commentArea = await page.$x("//form/div/div[1]");
@@ -124,7 +130,7 @@ async function reactReels(page, numsLike, minDuration, maxDuration) {
       likeReels++;
       // sau khi like thì click next, đảm bảo like đồng đều trong khoảng thời gian
       let elapsedWaitTime1 = 0;
-      while (elapsedWaitTime1 < waitTimeBetweenPosts) {
+      while (elapsedWaitTime1 < waitTimeBetweenPosts * 0.3) {
         await clickNext(page);
         elapsedWaitTime1 += 5000;
       }
@@ -134,6 +140,8 @@ async function reactReels(page, numsLike, minDuration, maxDuration) {
   }
 }
 try {
+  const url = "https://www.facebook.com/";
+  await navigateToUrl(page, url);
   await reactReels(page, 3, 1, 3);
 } catch (error) {
   logErrors.push({
@@ -141,4 +149,4 @@ try {
     detail: error.message,
   });
 }
-console.log(logErrors);
+return logErrors;

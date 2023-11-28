@@ -4,10 +4,16 @@ const delay = (timeout) =>
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-await delay(1000);
-await page.goto("https://www.facebook.com/", {
-  waitUntil: "networkidle2",
-});
+async function navigateToUrl(page, url) {
+  try {
+    await page.goto(url, {
+      waitUntil: "networkidle2",
+    });
+  } catch (error) {
+    throw new Error(`Error navigating to URL: ${url}. ${error.message}`);
+  }
+}
+
 
 let logErrors = [];
 async function clickNext(page) {
@@ -40,6 +46,8 @@ async function storyFacebook(page, minDuration, maxDuration) {
   }
 }
 try {
+  const url = "https://www.facebook.com/";
+  await navigateToUrl(page, url);
   await storyFacebook(page, 1, 3);
 } catch (error) {
   logErrors.push({
@@ -47,4 +55,4 @@ try {
     detail: error.message,
   });
 }
-console.log(logErrors);
+return logErrors;

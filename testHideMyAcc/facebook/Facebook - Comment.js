@@ -19,10 +19,15 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-await delay(1000);
-await page.goto("https://www.facebook.com/", {
-  waitUntil: "networkidle2",
-});
+async function navigateToUrl(page, url) {
+  try {
+    await page.goto(url, {
+      waitUntil: "networkidle2",
+    });
+  } catch (error) {
+    throw new Error(`Error navigating to URL: ${url}. ${error.message}`);
+  }
+}
 let logErrors = [];
 async function commentFacebook(page, numPosts, minDuration, maxDuration) {
   let postsCommented = 0;
@@ -86,7 +91,7 @@ async function commentFacebook(page, numPosts, minDuration, maxDuration) {
           await delay(5000);
           // lướt một khoảng thời gian sau comment, đảm bảo trong khoảng thời gian đó comment đều nhau
           let elapsedWaitTime1 = 0;
-          while (elapsedWaitTime1 < waitTimeBetweenPosts) {
+          while (elapsedWaitTime1 < waitTimeBetweenPosts * 0.7) {
             await page.mouse.wheel({ deltaY: getRandomInt(400, 700) });
             await delay(5000);
             elapsedWaitTime1 += 5000;
@@ -99,12 +104,13 @@ async function commentFacebook(page, numPosts, minDuration, maxDuration) {
   }
 }
 try {
+  const url = "https://www.facebook.com/";
+  await navigateToUrl(page, url);
   await commentFacebook(page, 5, 1, 3);
-  await delay(5000);
 } catch (error) {
   logErrors.push({
     error: "Error during commentFacebook execution",
     detail: error.message,
   });
 }
-console.log(logErrors);
+return logErrors;

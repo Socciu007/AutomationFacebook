@@ -2,9 +2,18 @@ import Hidemyacc from "./helpers/hidemyacc.js";
 import puppeteer from "puppeteer-core";
 import delay from "./helpers/delay.js";
 // import likeFacebook from "./functions/facebook/likeFacebook.js";
+import unFollows from "./functions/facebook/unFollow.js";
 
-import saveReels from "./functions/reels/saveReels.js";
 const hideMyAcc = new Hidemyacc();
+async function navigateToUrl(page, url) {
+  try {
+    await page.goto(url, {
+      waitUntil: "networkidle2",
+    });
+  } catch (error) {
+    throw new Error(`Error navigating to URL: ${url}. ${error.message}`);
+  }
+}
 
 (async () => {
   const profiles = await hideMyAcc.profiles();
@@ -24,16 +33,14 @@ const hideMyAcc = new Hidemyacc();
     });
     const page = await browser.newPage();
     await delay(1000);
-    await page.goto("https://www.facebook.com/", {
-      waitUntil: "networkidle2",
-    });
     let err = [];
     try {
-      await saveReels(page, 3, 1, 3);
-      await delay(10000);
+      const url = "https://www.facebook.com/";
+      await navigateToUrl(page, url);
+      await unFollows(page,3)
     } catch (error) {
       err.push({
-        error: "Error during save reels execution",
+        error: "Error during share reels execution",
         detail: error.message
       })
     }

@@ -4,17 +4,22 @@ const delay = (timeout) =>
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-await delay(1000);
-await page.goto("https://www.facebook.com/", {
-  waitUntil: "networkidle2",
-});
+async function navigateToUrl(page, url) {
+  try {
+    await page.goto(url, {
+      waitUntil: "networkidle2",
+    });
+  } catch (error) {
+    throw new Error(`Error navigating to URL: ${url}. ${error.message}`);
+  }
+}
 let logErrors = [];
 async function clickNext(page) {
   const nextButton = await page.$x(
     "//div[2]/div/div/div[1]/div/div/div/div/div[2]/div[1]/div/div/div[3]"
   );
   if (nextButton.length > 0) {
-    await delay(getRandomInt(5000, 7000));
+    await delay(getRandomInt(3000, 5000));
     await nextButton[0].click();
   } else {
     throw new Error("Next button not found. Please check your selector.");
@@ -42,6 +47,7 @@ async function saveReels(page, numsSave, minDuration, maxDuration) {
   let count = 0;
   const durationInMs =
     (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // chọn 1 mốc thời gian để dừng trong khoảng min và max
+  // Tính toán thời gian chờ giữa mỗi lần save
   const waitTimeBetweenPosts = durationInMs / numsSave;
   while (Date.now() - startTime < durationInMs) {
     if (saveReels >= numsSave) {
@@ -52,10 +58,10 @@ async function saveReels(page, numsSave, minDuration, maxDuration) {
     // thời gian đầu sẽ lướt một thời gian, hạn chế việc vừa vào đã thực hiện chức năng
     if (count == 0) {
       let elapsedWaitTime = 0;
-      while (elapsedWaitTime < durationInMs * 0.3) {
+      while (elapsedWaitTime < durationInMs * 0.1) {
         await clickNext(page);
         await delay(getRandomInt(3000, 5000));
-        elapsedWaitTime += 8000;
+        elapsedWaitTime += 5000;
       }
     }
     count++;
@@ -66,7 +72,7 @@ async function saveReels(page, numsSave, minDuration, maxDuration) {
 
     if (saveButton.length > 0) {
       await saveButton[0].click();
-      await delay(getRandomInt(3000, 7000));
+      await delay(getRandomInt(3000, 5000));
       const save = await page.$x(
         "//div/div[5]/div/div/div[4]/div/div/div[1]/div[1]/div/div/div/div/div/div/div[1]/div/div[1]"
       );
@@ -78,24 +84,23 @@ async function saveReels(page, numsSave, minDuration, maxDuration) {
       saveReels++;
       // sau khi save thì click next, đảm bảo save đồng đều trong khoảng thời gian
       let elapsedWaitTime1 = 0;
-      while (elapsedWaitTime1 < waitTimeBetweenPosts) {
+      while (elapsedWaitTime1 < waitTimeBetweenPosts * 0.3) {
         await clickNext(page);
         elapsedWaitTime1 += 5000;
       }
     } else {
-      throw new Error(
-        "Save button not found. Please check your selector."
-      );
+      throw new Error("Save button not found. Please check your selector.");
     }
   }
 }
 try {
+  const url = "https://www.facebook.com/";
+  await navigateToUrl(page, url);
   await saveReels(page, 3, 1, 3);
-  await delay(10000);
 } catch (error) {
   logErrors.push({
     error: "Error during save reel execution",
     detail: error.message,
   });
 }
-console.log(logErrors);
+return logErrors;
