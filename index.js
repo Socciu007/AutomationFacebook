@@ -40,7 +40,7 @@ async function navigateToUrl(page, url) {
       await unFollows(page,3)
     } catch (error) {
       err.push({
-        error: "Error during share reels execution",
+        error: "Error during unfollows execution",
         detail: error.message
       })
     }

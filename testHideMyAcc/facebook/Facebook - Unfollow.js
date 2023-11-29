@@ -15,12 +15,12 @@ async function navigateToUrl(page, url) {
 }
 let logErrors = [];
 async function unFollows(page, numFollow) {
-  const friendButton = await page.$('a[href="/friends/"]');
-  if (friendButton == null) {
+  const friendIcon = await page.$('a[href="/friends/"]');
+  if (friendIcon == null) {
     throw new Error("Friend button not found. Please check your selector.");
   }
   await delay(3000);
-  await friendButton.click();
+  await friendIcon.click();
   await delay(3000);
   const friendList = await page.$('a[href="/friends/list/"]');
   if (friendList == null) {
@@ -28,59 +28,73 @@ async function unFollows(page, numFollow) {
       "Friend list button not found. Please check your selector."
     );
   }
+  await delay(2000);
   await friendList.click();
   await delay(3000);
   // Lướt một khoảng random trước khi thực hiện chức năng
   let elapsedWaitTime = 0;
   while (elapsedWaitTime < 10000) {
-    await page.mouse.wheel({ deltaY: getRandomInt(500, 700) });
+    await page.mouse.wheel({ deltaY: getRandomInt(300, 500) });
     await delay(5000);
     elapsedWaitTime += 5000;
   }
-  let count = 0;
-  // click more
-  let moreButtons = await page.$$('div[class="x6s0dn4 x78zum5 x1q0g3np"]');
-  if (moreButtons == null) {
-    throw new Error("Can't found any More button. Please check your selector.");
-  }
-  while (count < numFollow) {
-    // click random 1 người
-    let randomIndex = Math.floor(Math.random() * moreButtons.length);
-    let moreButton = moreButtons[randomIndex];
-    await delay(3000);
-    await moreButton.click();
-    await delay(3000);
+  let count = 1;
 
-    // if (unFollowsButton == null) {
-    //   throw new Error("Unfollow button not found. Please check your selector.");
-    // }
-    // await delay(3000);
-    // await unFollowsButton.click();
-    const unFollowsIcon = await page.$(
-      'i[style="background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yo/r/0Ep59Le9_WE.png&quot;); background-position: 0px -903px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"]'
+  while (count < numFollow) {
+    await delay(2000);
+    const elements = await page.$$(
+      'div[class="x135pmgq"] > div[data-visualcompletion="ignore-dynamic"] > a[class="x1i10hfl x1qjc9v5 xjbqb8w xjqpnuy xa49m3k xqeqjp1 x2hbi6w x13fuv20 xu3j5b3 x1q0q8m5 x26u7qi x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xdl72j9 x2lah0s xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r x2lwn1j xeuugli xexx8yu x4uap5 x18d9i69 xkhd6sd x1n2onr6 x16tdsg8 x1hl2dhg xggy1nq x1ja2u2z x1t137rt x1q0g3np x87ps6o x1lku1pv x1a2a7pz x1lq5wgf xgqcy7u x30kzoy x9jhf4c x1lliihq"]'
     );
-    const followIcon = await page.$(
-      'i[style="background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yu/r/qpnL8A74oJq.png&quot;); background-position: 0px -63px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"]'
-    );
-    if(unFollowsIcon) {
+    console.log(elements.length);
+    // const elements = await page.$$eval(
+    //   'div[class="x135pmgq"] > div[data-visualcompletion="ignore-dynamic"] > a[class="x1i10hfl x1qjc9v5 xjbqb8w xjqpnuy xa49m3k xqeqjp1 x2hbi6w x13fuv20 xu3j5b3 x1q0q8m5 x26u7qi x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xdl72j9 x2lah0s xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r x2lwn1j xeuugli xexx8yu x4uap5 x18d9i69 xkhd6sd x1n2onr6 x16tdsg8 x1hl2dhg xggy1nq x1ja2u2z x1t137rt x1q0g3np x87ps6o x1lku1pv x1a2a7pz x1lq5wgf xgqcy7u x30kzoy x9jhf4c x1lliihq"]',
+    //   (elements) => (elements ? elements.map((element) => element) : [])
+    // );
+    await delay(3000);
+    if (elements.length === 0) {
+      console.error("No elements found. Exiting loop.");
+      break;
+    }
+
+    let randomIndex = Math.floor(Math.random() * (elements.length - 1));
+    let inforButton = elements[randomIndex];
+    console.log(randomIndex);
+    if (inforButton) {
+      await delay(2000);
+      await inforButton.click();
+      await delay(5000);
+      const friendButton = await page.$x(
+        "/html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div/div[4]/div/div/div[1]/div/div"
+      );
+      if (friendButton == null) {
+        throw new Error("Friend button not found. Please check your selector.");
+      }
       await delay(3000);
-          const unFollowsButton = await page.$(
-            'div[class="x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou xe8uvvx x1hl2dhg xggy1nq x1o1ewxj x3x9cwd x1e5q0jg x13rtm0m x87ps6o x1lku1pv x1a2a7pz xjyslct x9f619 x1ypdohk x78zum5 x1q0g3np x2lah0s xnqzcj9 x1gh759c xdj266r xat24cr x1344otq x1de53dj x1n2onr6 x16tdsg8 x1ja2u2z x6s0dn4 x1y1aw1k xwib8y2"]:nth-child(2)'
-          );
-          if(unFollowsButton){
-               await unFollowsButton.click();
-          } else {
-            throw new Error(
-              "Unfollow button not found. Please check your selector."
-            );
-          }
-      count++;
-    } else if(followIcon){
-      await delay(3000);
-      await moreButton.click();
-      continue;
+      await friendButton[0].click();
+      await delay(5000);
+      const unFollowsIcon = await page.$(
+        'img[src="https://static.xx.fbcdn.net/rsrc.php/v3/yw/r/Kluyv0pwyPt.png"]'
+      );
+      const followIcon = await page.$(
+        'img[src="https://static.xx.fbcdn.net/rsrc.php/v3/ya/r/SBPvsU_pPhg.png"]'
+      );
+      if (unFollowsIcon) {
+        await delay(3000);
+        await unFollowsIcon.click();
+        console.log("Đã click unfollow");
+        await delay(3000);
+        count++;
+        console.log(count);
+      } else if (followIcon) {
+        console.log("Chưa follow. Bỏ qua");
+        await delay(3000);
+      } else {
+        throw new Error("Unfollow icon not found. Please check your selector.");
+      }
     } else {
-      throw new Error("Unfollow icon not found. Please check your selector.");
+      throw new Error(
+        "Friend information not found. Please check your selector."
+      );
     }
   }
 }

@@ -58,20 +58,13 @@ async function shareFacebook(page, numPosts, minDuration, maxDuration) {
           await delay(3000);
           await button.click();
           await delay(5000);
-          const dialog = await page.$x(
-            "/html/body/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div[2]/div/div/div/div/div[1]"
+          const closeButton = await page.$(
+            'div[class="x92rtbv x10l6tqk x1tk7jg1 x1vjfegm"]'
           );
-          if (dialog.length > 0) {
+          if (closeButton) {
             await delay(3000);
-            const esc = await page.$x(
-              "/html/body/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div[2]/div/div/div/div/div[1]/div[2]"
-            );
-            if (esc.length > 0) {
-              await esc[0].click();
-              await page.mouse.wheel({ deltaY: getRandomInt(500, 700) });
-            } else {
-              throw new Error("Can't close dialog. Please check your selector");
-            }
+            await closeButton.click();
+            continue;
           } else {
             const share = await page.$(
               'div[class="xsag5q8 xz9dl7a"] > div > div[data-visualcompletion="ignore-dynamic"]:nth-child(1)'
@@ -85,7 +78,7 @@ async function shareFacebook(page, numPosts, minDuration, maxDuration) {
             await share.click();
             // Thực hiện cuộn trang trong thời gian chờ
             let elapsedWaitTime1 = 0;
-            while (elapsedWaitTime1 < waitTimeBetweenPosts * 0.7) {
+            while (elapsedWaitTime1 < waitTimeBetweenPosts * 0.3) {
               await page.mouse.wheel({ deltaY: getRandomInt(400, 700) });
               await delay(5000);
               elapsedWaitTime1 += 5000;
@@ -94,6 +87,8 @@ async function shareFacebook(page, numPosts, minDuration, maxDuration) {
           }
         }
       }
+    } else {
+      throw new Error("Share button not found. Please check your selector");
     }
     scrolledTimes++;
     await page.mouse.wheel({ deltaY: getRandomInt(100, 200) });
@@ -109,4 +104,4 @@ try {
     detail: error.message,
   });
 }
-console.log(logErrors);
+return logErrors;

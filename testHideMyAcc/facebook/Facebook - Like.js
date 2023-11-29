@@ -45,7 +45,7 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
     count++;
     // Tìm nút like ở page để click
     const likeButtons = await page.$$(
-      'span[class= "x3nfvp2"] > i[data-visualcompletion="css-img"]'
+      'div[class="x1i10hfl x1qjc9v5 xjbqb8w xjqpnuy xa49m3k xqeqjp1 x2hbi6w x13fuv20 xu3j5b3 x1q0q8m5 x26u7qi x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xdl72j9 x2lah0s xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r x2lwn1j xeuugli xexx8yu x4uap5 x18d9i69 xkhd6sd x1n2onr6 x16tdsg8 x1hl2dhg x1ja2u2z x1t137rt x1o1ewxj x3x9cwd x1e5q0jg x13rtm0m x3nfvp2 x1q0g3np x87ps6o x1lku1pv x1a2a7pz x5ve5x3"]'
     );
 
     if (likeButtons.length > 0) {
@@ -58,13 +58,13 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
             inline: "center", // Đảm bảo button nằm ở trung tâm theo chiều ngang
             behavior: "smooth", // Hiệu ứng cuộn mượt mà
           }),
-            await delay(5000);
+            await delay(3000);
           await button.click();
-          await delay(5000);
+          await delay(3000);
           // Thực hiện cuộn trang trong thời gian chờ
           let elapsedWaitTime1 = 0;
           while (elapsedWaitTime1 < waitTimeBetweenPosts * 0.4) {
-            await page.mouse.wheel({ deltaY: getRandomInt(400, 700) });
+            await page.mouse.wheel({ deltaY: getRandomInt(500, 700) });
             await delay(5000);
             elapsedWaitTime1 += 5000;
           }
