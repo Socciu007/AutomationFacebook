@@ -38,7 +38,7 @@ async function unFollows(page, numFollow) {
     await delay(5000);
     elapsedWaitTime += 5000;
   }
-  let count = 1;
+  let count = 0;
 
   while (count < numFollow) {
     await delay(2000);
