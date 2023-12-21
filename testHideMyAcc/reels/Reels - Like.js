@@ -36,6 +36,7 @@ async function likeReels(page, numsLike, minDuration, maxDuration) {
   }
   await delay(3000);
   await video.click();
+  await page.waitForNavigation();
   await delay(3000);
   // click reels
   const reel = await page.$('a[href="/reel/"]');

@@ -59,7 +59,7 @@ async function commentFacebook(page, numPosts, minDuration, maxDuration) {
     count++;
     // Tìm nút comments có trên page
     const commentButtons = await page.$$(
-      'div[class="x9f619 x1n2onr6 x1ja2u2z x78zum5 xdt5ytf x2lah0s x193iq5w xeuugli x150jy0e x1e558r4 x10b6aqq x1yrsyyn"] > i[data-visualcompletion="css-img"]'
+      'div[class="x9f619 x1n2onr6 x1ja2u2z x78zum5 x2lah0s x1qughib x1qjc9v5 xozqiw3 x1q0g3np x150jy0e x1e558r4 xjkvuk6 x1iorvi4 xwrv7xz x8182xy x4cne27 xifccgj"] > div[class="x9f619 x1n2onr6 x1ja2u2z x78zum5 xdt5ytf x193iq5w xeuugli x1r8uery x1iyjqo2 xs83m0k xg83lxy x1h0ha7o x10b6aqq x1yrsyyn"]:nth-child(2)'
     );
 
     if (commentButtons.length > 0) {
@@ -72,7 +72,7 @@ async function commentFacebook(page, numPosts, minDuration, maxDuration) {
             inline: "center", // Đảm bảo button nằm ở trung tâm theo chiều ngang
             behavior: "smooth", // Hiệu ứng cuộn mượt mà
           }),
-            await delay(3000);
+          await delay(3000);
           await button.click();
           await delay(3000);
           // comment random
@@ -81,17 +81,17 @@ async function commentFacebook(page, numPosts, minDuration, maxDuration) {
           await delay(5000);
           await page.keyboard.press("Enter");
           await delay(5000);
-          // nếu có nút close thì đóng để tiếp tục
-          const closeButton = await page.$('div[role="dialog"]');
-          if (closeButton == null) {
-            throw Error("Close button not found. Please check your selector.");
+          // nếu có dialog 
+          const dialog = await page.$('div[role="dialog"]');
+          if (dialog) {
+            await delay(3000);
+            await page.keyboard.press("Escape");
+            await delay(3000);
           }
-          await delay(5000);
-          await page.keyboard.press("Escape");
-          await delay(5000);
+          
           // lướt một khoảng thời gian sau comment, đảm bảo trong khoảng thời gian đó comment đều nhau
           let elapsedWaitTime1 = 0;
-          while (elapsedWaitTime1 < waitTimeBetweenPosts * 0.7) {
+          while (elapsedWaitTime1 < waitTimeBetweenPosts * 0.4) {
             await page.mouse.wheel({ deltaY: getRandomInt(400, 700) });
             await delay(5000);
             elapsedWaitTime1 += 5000;
@@ -106,7 +106,7 @@ async function commentFacebook(page, numPosts, minDuration, maxDuration) {
 try {
   const url = "https://www.facebook.com/";
   await navigateToUrl(page, url);
-  await commentFacebook(page, 5, 1, 3);
+  await commentFacebook(page, 3, 1, 3);
 } catch (error) {
   logErrors.push({
     error: "Error during commentFacebook execution",

@@ -21,12 +21,14 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
   let scrolledTimes = 0;
   const startTime = new Date();
   let count = 0;
+  let y = 0;
   const durationInMs =
     (Math.random() * (maxDuration - minDuration) + minDuration) * 60000; // chọn 1 mốc thời gian để dừng trong khoảng min và max
   // Tính toán thời gian chờ giữa mỗi lần chia sẻ
   const waitTimeBetweenPosts = durationInMs / numPosts;
   while (Date.now() - startTime < durationInMs) {
     if (postsLiked >= numPosts) {
+      console.log("đã like đủ bài");
       // Nếu đã like đủ bài, chỉ cuộn trang
       await page.mouse.wheel({ deltaY: getRandomInt(500, 1000) });
       await delay(5000);
@@ -50,29 +52,28 @@ async function likeFacebook(page, numPosts, minDuration, maxDuration) {
 
     if (likeButtons.length > 0) {
       for (const button of likeButtons) {
-        // xem giải thích file explain
         const buttonPosition = await button.boundingBox();
-        if (buttonPosition && buttonPosition.y > scrolledTimes * scrollAmount) {
-          await button.scrollIntoView({
-            block: "center", // Đảm bảo button nằm ở trung tâm theo chiều dọc
-            inline: "center", // Đảm bảo button nằm ở trung tâm theo chiều ngang
-            behavior: "smooth", // Hiệu ứng cuộn mượt mà
-          }),
-            await delay(3000);
+        if (buttonPosition && buttonPosition.y > y + 100) {
+          await delay(3000);
           await button.click();
           await delay(3000);
+          postsLiked++;
+          console.log(postsLiked);
           // Thực hiện cuộn trang trong thời gian chờ
           let elapsedWaitTime1 = 0;
           while (elapsedWaitTime1 < waitTimeBetweenPosts * 0.4) {
-            await page.mouse.wheel({ deltaY: getRandomInt(500, 700) });
-            await delay(5000);
-            elapsedWaitTime1 += 5000;
+            await page.mouse.wheel({ deltaY: getRandomInt(100, 300) });
+            const randomTime = getRandomInt(1000, 2000);
+            await delay(randomTime);
+            elapsedWaitTime1 += randomTime;
           }
-          postsLiked++;
+
+          break;
         }
       }
     }
     scrolledTimes++;
+    y += scrollAmount;
   }
 }
 try {

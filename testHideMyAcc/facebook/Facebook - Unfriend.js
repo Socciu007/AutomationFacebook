@@ -40,11 +40,13 @@ async function unFriends(page, numFriends) {
     elapsedWaitTime += 4000;
   }
   let count = 0;
-  let moreButtons = await page.$$('div[class="x6s0dn4 x78zum5 x1q0g3np"]');
-  if (moreButtons == null) {
-    throw new Error("Can't found any More button. Please check your selector.");
-  }
   while (count < numFriends) {
+    let moreButtons = await page.$$('div[class="x6s0dn4 x78zum5 x1q0g3np"]');
+    if (moreButtons == null) {
+      throw new Error(
+        "Can't found any More button. Please check your selector."
+      );
+    }
     // click random 1 người
     let randomIndex = Math.floor(Math.random() * moreButtons.length);
     let moreButton = moreButtons[randomIndex];
