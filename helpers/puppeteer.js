@@ -1,9 +1,9 @@
 import Promise from "bluebird";
 
 export const delay = async function (time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
+  return new Promise(resolve => setTimeout(resolve, time));
 };
-export const getRandomInt = (max) => {
+export const getRandomInt = max => {
   return Math.floor(Math.random() * max);
 };
 export const getRandomIntBetween = (min, max) => {
@@ -31,7 +31,7 @@ export const getElementByID = async function (
 };
 
 export const clickElement = async function (page, selector) {
-  await page.$eval(selector, (e) => e.click());
+  await page.$eval(selector, e => e.click());
 };
 
 export const waitForNavigation = async (page, timeout = 60000) => {
@@ -56,7 +56,7 @@ export const waitForNavigation2 = async function (page, timeout = 60000) {
 };
 export const getAllText = async function (page) {
   try {
-    const text = await page.$eval("*", (el) => el.innerText);
+    const text = await page.$eval("*", el => el.innerText);
     return text;
   } catch (err) {
     return "";
@@ -65,7 +65,7 @@ export const getAllText = async function (page) {
 
 export const getText = async function (page, element) {
   try {
-    const text = await page.evaluate((el) => el.innerText, element);
+    const text = await page.evaluate(el => el.innerText, element);
     return text;
   } catch (err) {
     return "";

@@ -8,6 +8,7 @@ import checkExistElement from "./helpers/checkExistElement.js";
 import clearText from "./helpers/clearText.js";
 import getSizeChrome from "./helpers/getChromeSize.js";
 import likeRandom from "./functions/mbasic/likeRandom.js";
+import readNotifications from "./functions/mbasic/readNotifications.js";
 const hideMyAcc = new Hidemyacc();
 async function navigateToUrl(page, link) {
   try {
@@ -28,7 +29,7 @@ async function navigateToUrl(page, link) {
   const profiles = await hideMyAcc.profiles();
   // console.log(profiles);
   try {
-    const tabPromises = profiles.data.map(async (profile) => {
+    const tabPromises = profiles.data.map(async profile => {
       const response = await hideMyAcc.start(profile.id);
       if (!response) {
         throw new Error(
@@ -48,7 +49,8 @@ async function navigateToUrl(page, link) {
         const url = "https://mbasic.facebook.com/";
         await navigateToUrl(page, url);
         await delay(5000);
-        const rs = await likeRandom(page, 3, 2, 3);
+        // const rs = await likeRandom(page, 3, 2, 3);
+        const readNoti = await readNotifications(page, 0);
         // const JSpath = "#m_news_feed_stream > a";
         // const result = await checkExistElementOnScreen(page, JSpath);
         // switch (result) {

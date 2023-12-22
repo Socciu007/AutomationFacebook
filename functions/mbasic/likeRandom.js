@@ -24,24 +24,26 @@ async function likeRandom(page, numLikes, minDuration, maxDuration) {
       if (count >= numLikes) {
         console.log("đã like đủ bài");
         await page.mouse.wheel({ deltaY: scrollAmount });
-            const moreNews = await checkExistElementOnScreen(
+        const moreNews = await checkExistElementOnScreen(
+          page,
+          "#m_news_feed_stream > a"
+        );
+        console.log("moreNew", moreNews);
+        if (moreNews == 0) {
+          const moreNewsBtn = await getElement(
             page,
-            "#m_news_feed_stream > a"
+            "#m_news_feed_stream > a",
+            10
           );
-          if (moreNews == 0) {
-            const moreNewsBtn = await getElement(
-              page,
-              "#m_news_feed_stream > a",
-              10
-            );
-            await moreNewsBtn.click();
-            continue;
-          }
+          console.log("moreNewButton", moreNewsBtn);
+          await moreNewsBtn.click();
+          continue;
+        }
       }
       await delay(5000);
-      let hrefs = await page.$$eval("a", (links) => links.map((a) => a.href));
+      let hrefs = await page.$$eval("a", links => links.map(a => a.href));
       if (hrefs.length > 0) {
-        hrefs = hrefs.filter((e) => e.includes("/reactions/picker/"));
+        hrefs = hrefs.filter(e => e.includes("/reactions/picker/"));
         const randomIndex = Math.floor(Math.random() * hrefs.length);
         const href = hrefs[randomIndex];
         const reactSelector = `[href="${href.replace(
