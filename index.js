@@ -9,6 +9,7 @@ import clearText from "./helpers/clearText.js";
 import getSizeChrome from "./helpers/getChromeSize.js";
 import likeRandom from "./functions/mbasic/likeRandom.js";
 import readNotifications from "./functions/mbasic/readNotifications.js";
+import sendMessage from "./functions/mbasic/sendMessage.js";
 const hideMyAcc = new Hidemyacc();
 async function navigateToUrl(page, link) {
   try {
@@ -50,7 +51,8 @@ async function navigateToUrl(page, link) {
         await navigateToUrl(page, url);
         await delay(5000);
         // const rs = await likeRandom(page, 3, 2, 3);
-        const readNoti = await readNotifications(page, 0);
+        // const readNoti = await readNotifications(page, 0);
+        const sendMsg = await sendMessage(page,2, 15, ["Hello", "Hj"])
         // const JSpath = "#m_news_feed_stream > a";
         // const result = await checkExistElementOnScreen(page, JSpath);
         // switch (result) {
