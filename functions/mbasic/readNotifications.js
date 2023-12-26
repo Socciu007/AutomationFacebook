@@ -1,16 +1,20 @@
 import checkExistElement from "../../helpers/checkExistElement.js";
 import { delay, getRandomIntBetween } from "../../helpers/puppeteer.js";
 import { getElement } from "../../helpers/puppeteer.js";
-import scrollSmoothIfNotExistOnScreen from "../../helpers/scrollIfNotExist.js";
 
-async function readNotifications(page, numsNoti, waitTime, viewOptions) {
+async function readNotifications(page, numsProfiles) {
+  const objNotifications = {
+    numsNoti: 3,
+    waitTime: 15,
+    viewOptions: "random",
+  };
   try {
     let countNoti = 0;
-    const waitTimeMs = waitTime*1000;
-    while ( countNoti < numsNoti) {
+    const waitTimeMs = objNotifications.waitTime * 1000;
+    while (countNoti < objNotifications.numsNoti) {
       const startTime = new Date();
       let currentTime = new Date();
-      while (currentTime - startTime < waitTimeMs) {
+      while (currentTime - startTime < waitTimeMs / numsProfiles) {
         currentTime = new Date();
       }
       // tim nut thong bao và click sang trang thong bao
@@ -26,7 +30,6 @@ async function readNotifications(page, numsNoti, waitTime, viewOptions) {
         if (checknotiBtn != 1) {
           throw Error("Element notification is not exist");
         }
-        await scrollSmoothIfNotExistOnScreen(page, notiSelector);
         const notiBtn = await getElement(page, notiSelector);
         if (notiBtn) {
           await notiBtn.click();
@@ -62,19 +65,19 @@ async function readNotifications(page, numsNoti, waitTime, viewOptions) {
         if (checknotiDetailsBtn != 1) {
           throw Error("Element notification details is not exist");
         }
-        await scrollSmoothIfNotExistOnScreen(page, notiDetailsSelector);
         const notiDetailsBtn = await getElement(page, notiDetailsSelector);
         if (notiDetailsBtn) {
           await notiDetailsBtn.click();
         } else {
           throw Error("Can not click into notification details");
         }
+      } else {
+        throw Error("No notification to read");
       }
       await delay(getRandomIntBetween(3000, 5000));
-      // return page home
+      // return page home after read notification
       const homeSelector = "#header > table > tbody > tr > td > a";
       const checkHomeSelector = await checkExistElement(page, homeSelector, 3);
-      console.log('check Home', checkHomeSelector);
       if (checkHomeSelector != 1) {
         throw Error("Element home facebook is not exist");
       }
@@ -84,11 +87,12 @@ async function readNotifications(page, numsNoti, waitTime, viewOptions) {
       } else {
         throw Error("Can not click into home facebook");
       }
-      await delay(getRandomIntBetween(3000, 5000))
+      await delay(getRandomIntBetween(3000, 5000));
+      console.log("so thong bao da doc", countNoti + 1);
       countNoti++;
     }
   } catch (error) {
-    throw Error(error.message)
+    throw Error(error.message);
   }
 }
 export default readNotifications;
