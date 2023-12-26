@@ -1,14 +1,99 @@
-import delay from "../../helpers/delay.js";
 import scrollSmoothIfNotExistOnScreen from "../../helpers/scrollIfNotExist.js";
 import checkExistElementOnScreen from "../../helpers/checkElementOnScreen.js";
 import {
+  delay,
   getElement,
-  getElements,
   getRandomInt,
   getRandomIntBetween,
-  waitForNavigation,
 } from "../../helpers/puppeteer.js";
 import checkExistElement from "../../helpers/checkExistElement.js";
+
+let newsfeed = {
+          scrollingTime: {
+            start: 5,
+            end: 10,
+          },
+          delayTime: {
+            start: 3,
+            end: 5,
+          },
+          randomLike: {
+            isClicked: false,
+            start: 5,
+            end: 10,
+          },
+          shareToFeed: {
+            isClicked: false,
+            start: 2,
+            end: 3,
+          },
+          randomComment: {
+            isClicked: true,
+            start: 5,
+            end: 10,
+            content: ["Ý nghĩa", "Tuyệt vời"],
+          },
+        };
+
+async function interactWithNewsfeed(page, newsfeed) {
+  if (newsfeed.randomLike.isClicked == true) {
+    let count = 0;
+    let numLikes = getRandomIntBetween(
+      newsfeed.randomLike.start,
+      newsfeed.randomLike.end
+    );
+    while (count < numLikes) {
+      try {
+        await scroll(page, newsfeed.scrollingTime, newsfeed.delayTime);
+        const result = await randomLikePost(page, newsfeed.delayTime);
+        if (result != 0) {
+          count++;
+        }
+      } catch (error) {
+        console.log(error);
+        break;
+      }
+    }
+    console.log("Da like du bai");
+  }
+
+  if (newsfeed.shareToFeed.isClicked == true) {
+    let count = 0;
+    let numShares = getRandomIntBetween(
+      newsfeed.shareToFeed.start,
+      newsfeed.shareToFeed.end
+    );
+    while (count < numShares) {
+      await scroll(page, newsfeed.scrollingTime, newsfeed.delayTime);
+      const result = await share(page, newsfeed.delayTime);
+      if (result != 0) {
+        count++;
+        console.log("Đã share được ", count, " bài");
+      }
+    }
+    console.log(shareToFeed);
+  }
+
+  if (newsfeed.randomComment.isClicked == true) {
+    const numComments = getRandomIntBetween(
+      newsfeed.randomComment.start,
+      newsfeed.randomComment.end
+    );
+    let count = 0;
+    while (count < numComments) {
+      await scroll(page, newsfeed.scrollingTime, newsfeed.delayTime);
+      const result = await comment(
+        page,
+        newsfeed.randomComment.content,
+        newsfeed.delayTime
+      );
+      if (result > 0) {
+        count++;
+        console.log("Đã comment được ", count, " bài");
+      }
+    }
+  }
+}
 
 async function scroll(page, scrollingTime, delayTime) {
   let randomScrollTime = getRandomIntBetween(
@@ -43,62 +128,7 @@ async function scroll(page, scrollingTime, delayTime) {
     console.log(error);
   }
 }
-async function interactWithNewsfeed(
-  page,
-  scrollingTime,
-  delayTime,
-  randomLike,
-  shareToFeed,
-  randomComment
-) {
-  if (randomLike.isClicked == true) {
-    let count = 0;
-    let numLikes = getRandomIntBetween(randomLike.start, randomLike.end);
-    while (count < numLikes) {
-      try {
-        await scroll(page, scrollingTime, delayTime);
-        const result = await randomLikePost(page, delayTime);
-        if (result != 0) {
-          count++;
-        }
-      } catch (error) {
-        console.log(error);
-        break;
-      }
-    }
-    console.log("Da like du bai");
-  }
 
-  if (shareToFeed.isClicked == true) {
-    let count = 0;
-    let numShares = getRandomIntBetween(shareToFeed.start, shareToFeed.end);
-    while (count < numShares) {
-      await scroll(page, scrollingTime, delayTime);
-      const result = await share(page, delayTime);
-      if (result != 0) {
-        count++;
-        console.log("Đã share được ", count, " bài");
-      }
-    }
-    console.log(shareToFeed);
-  }
-  if (randomComment.isClicked == true) {
-    const numComments = getRandomIntBetween(
-      randomComment.start,
-      randomComment.end
-    );
-    let count = 0;
-    while (count < numComments) {
-       await scroll(page, scrollingTime, delayTime);
-      const result = await comment(page, randomComment.content, delayTime);
-      if (result > 0) {
-        count++;
-        console.log("Đã share được ", count, " bài");
-      }
-      console.log(randomComment);
-    }
-  }
-}
 async function findReactBtn(page) {
   try {
     let hrefs = await page.$$eval("a", (links) => links.map((a) => a.href));
@@ -269,38 +299,41 @@ async function findCommentBtn(page) {
        if (checkCommentBtn != 1) {
          throw new Error("Can't find comment button");
        }
-       console.log("Co nut cpmment");
+       console.log("Co nut comment");
        await scrollSmoothIfNotExistOnScreen(page, commentSelector);
        const commentBtn = await getElement(page, commentSelector);
        if (commentBtn) {
          await commentBtn.click();
        }
+       await delay(5000)
      }
-    return 1;
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
 async function clickComment(page, content) {
-  const commentArea = 'textarea[id="composerInput"]';
-  const checkCommentArea = await checkExistElement(page, commentArea, 3);
+  const commentArea = 'textarea[name="comment_text"]';
+  const checkCommentArea = await checkExistElement(page, commentArea, 5);
+  console.log(checkCommentArea);
   if (checkCommentArea != 1) {
     throw new Error("Can't find area comment");
   }
   await scrollSmoothIfNotExistOnScreen(page, commentArea);
   await delay(3000);
+  const textarea = await getElement(page,commentArea,10)
+  await textarea.click(); 
   if (content.length > 0) {
     const randomIndex = getRandomInt(content.length);
     const text = content[randomIndex];
     await page.keyboard.type(text);
     console.log("đã nhập xong");
-    await delay(1000);
+    await delay(2000);
   }
 }
 async function clickPostComment(page) {
   try {
-    const postSelector = "#u_0_1_vn > tbody > tr > td.m > div > input";
+    const postSelector = "tbody > tr > td.m > div > input";
     const checkPostBtn = await checkExistElement(page, postSelector, 3);
     if (checkPostBtn != 1) {
       throw new Error("Can't find post button");

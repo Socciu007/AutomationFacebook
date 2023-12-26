@@ -43,32 +43,8 @@ async function navigateToUrl(page, link) {
         const url = "https://mbasic.facebook.com/";
         await navigateToUrl(page, url);
         await delay(5000);
-        let scrollingTime = {
-          start: 5,
-          end: 10,
-        };
-        let delayTime = {
-          start: 3,
-          end: 5,
-        };
-        let randomLike = {
-          isClicked: false,
-          start: 5,
-          end: 10,
-        };
-        let shareToFeed = {
-          isClicked: false,
-          start: 2,
-          end: 3,
-        };
-        let randomComment = {
-          isClicked: true,
-          start: 5,
-          end: 10,
-          content: ["Ý nghĩa", "Tuyệt vời"],
-        };
 
-        await interactWithNewsfeed(page,scrollingTime,delayTime,randomLike,shareToFeed,randomComment)
+        await interactWithNewsfeed(page,newsfeed)
       } else {
         console.log("page crashed");
       }
