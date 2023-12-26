@@ -23,7 +23,7 @@ async function navigateToUrl(page, link) {
   const profiles = await hideMyAcc.profiles();
   // console.log(profiles);
   try {
-    const tabPromises = profiles.data.map(async (profile) => {
+    const tabPromises = profiles.data.map(async profile => {
       const response = await hideMyAcc.start(profile.id);
       if (!response) {
         throw new Error(
