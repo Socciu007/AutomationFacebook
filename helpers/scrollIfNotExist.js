@@ -1,4 +1,4 @@
-import checkIsLive from "./checkIsLive.js";
+
 import checkExistElementOnScreen from "./checkElementOnScreen.js";
 async function scrollSmoothIfNotExistOnScreen(page, JSpath) {
   try {

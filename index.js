@@ -1,13 +1,8 @@
 import Hidemyacc from "./helpers/hidemyacc.js";
 import puppeteer from "puppeteer-core";
 import delay from "./helpers/delay.js";
-import checkExistElementOnScreen from "./helpers/checkElementOnScreen.js";
 import checkIsLive from "./helpers/checkIsLive.js";
-import scrollSmoothIfNotExistOnScreen from "./helpers/scrollIfNotExist.js";
-import checkExistElement from "./helpers/checkExistElement.js";
-import clearText from "./helpers/clearText.js";
-import getSizeChrome from "./helpers/getChromeSize.js";
-import likeRandom from "./functions/mbasic/likeRandom.js";
+import interactWithNewsfeed from "./functions/mbasic/newsfeed.js";
 const hideMyAcc = new Hidemyacc();
 async function navigateToUrl(page, link) {
   try {
@@ -48,26 +43,32 @@ async function navigateToUrl(page, link) {
         const url = "https://mbasic.facebook.com/";
         await navigateToUrl(page, url);
         await delay(5000);
-        const rs = await likeRandom(page, 3, 2, 3);
-        // const JSpath = "#m_news_feed_stream > a";
-        // const result = await checkExistElementOnScreen(page, JSpath);
-        // switch (result) {
-        //   case 1:
-        //     await page.click(JSpath);
-        //     console.log("clicked");
-        //     break;
-        //   case -1:
-        //     const rs = await scrollSmoothIfNotExistOnScreen(page, JSpath);
-        //     if (rs == 1) {
-        //       console.log("scrolled");
-        //       await page.click(JSpath);
-        //     } else {
-        //       console.log("can't scroll");
-        //     }
-        //     break;
-        //   case false:
-        //     console.log("Error when check exist element");
-        // }
+        let scrollingTime = {
+          start: 5,
+          end: 10,
+        };
+        let delayTime = {
+          start: 3,
+          end: 5,
+        };
+        let randomLike = {
+          isClicked: false,
+          start: 5,
+          end: 10,
+        };
+        let shareToFeed = {
+          isClicked: false,
+          start: 2,
+          end: 3,
+        };
+        let randomComment = {
+          isClicked: true,
+          start: 5,
+          end: 10,
+          content: ["Ý nghĩa", "Tuyệt vời"],
+        };
+
+        await interactWithNewsfeed(page,scrollingTime,delayTime,randomLike,shareToFeed,randomComment)
       } else {
         console.log("page crashed");
       }
