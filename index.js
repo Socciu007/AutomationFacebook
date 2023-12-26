@@ -52,8 +52,8 @@ async function navigateToUrl(page, link) {
         await navigateToUrl(page, url);
         await delay(5000);
         // const rs = await likeRandom(page, 3, 2, 3);
-        const readNoti = await readNotifications(page, profiles.data.length);
-        // const sendMsg = await sendMessage(page, profiles.data.length);
+        // const readNoti = await readNotifications(page, profiles.data.length);
+        const sendMsg = await sendMessage(page, profiles.data.length);
         // const replyMsg = await replyMessage(page, profiles.data.length);
         // const JSpath = "#m_news_feed_stream > a";
         // const result = await checkExistElementOnScreen(page, JSpath);

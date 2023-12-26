@@ -2,14 +2,16 @@ import checkExistElement from "../../helpers/checkExistElement.js";
 import {
   clickElement,
   delay,
+  getRandomInt,
   getRandomIntBetween,
 } from "../../helpers/puppeteer.js";
 import { getElement } from "../../helpers/puppeteer.js";
 
 async function replyMessage(page, numsProfiles) {
   const objReplyMsg = {
-    numsFriend: 3,
+    numsFriend: 2,
     waitTime: 15,
+    // idFriend: ["100089185640748", "61554607452774"],
     message: ["Hello", "Hi"],
   };
   try {
@@ -23,6 +25,7 @@ async function replyMessage(page, numsProfiles) {
       while (currentTime - startTime < waitTimeMs / numsProfiles) {
         currentTime = new Date();
       }
+
       // tim nut message và click sang trang mesage to reply
       let hrefsMessages = await page.$$eval("a", links =>
         links.map(a => a.href)
@@ -50,11 +53,13 @@ async function replyMessage(page, numsProfiles) {
         }
       }
       await delay(getRandomIntBetween(3000, 5000));
+
       // check sang trang chat ?
       let url = await page.url();
       if (!url.includes("/messages")) {
         throw Error("Messages page has not been loaded");
       }
+
       // chon ban be de gui tin nhan
       let hrefsSendMsg = await page.$$eval("a", links =>
         links.map(a => a.href)
@@ -63,7 +68,6 @@ async function replyMessage(page, numsProfiles) {
         hrefsSendMsg = await hrefsSendMsg.filter(e =>
           e.includes("/messages/read")
         );
-        console.log("lenngth person send", hrefsSendMsg.length);
         const randomIndex = Math.floor(Math.random() * hrefsSendMsg.length);
         const href = hrefsSendMsg[randomIndex];
         const friendToChatSelector = `h3 > [href="${href.replace(
@@ -89,16 +93,15 @@ async function replyMessage(page, numsProfiles) {
       }
       console.log("so ban chat", countFriend + 1);
       await delay(getRandomIntBetween(3000, 5000));
+
       // select msg to send and send msg
       for (const msg of objReplyMsg.message) {
-        console.log("msg", msg);
         const inputMsgSelector = "table > tbody > tr > td > textarea";
         const checkExistInputMsg = await checkExistElement(
           page,
           inputMsgSelector,
           3
         );
-        console.log("check", checkExistInputMsg);
         if (checkExistInputMsg != 1) {
           throw Error("no element exists to enter message");
         }
@@ -116,6 +119,35 @@ async function replyMessage(page, numsProfiles) {
         await clickElement(page, sendMsgSelector);
         await delay(getRandomIntBetween(3000, 5000));
       }
+
+      // let countMsg = 0;
+      // while (countMsg < getRandomIntBetween(1, 3)) {
+      //   const msgRandom =
+      //     objReplyMsg.message[getRandomInt(objReplyMsg.message.length)];
+      //   const inputMsgSelector = "table > tbody > tr > td > textarea";
+      //   const checkExistInputMsg = await checkExistElement(
+      //     page,
+      //     inputMsgSelector,
+      //     3
+      //   );
+      //   if (checkExistInputMsg != 1) {
+      //     throw Error("no element exists to enter message");
+      //   }
+      //   await page.type(inputMsgSelector, msgRandom);
+      //   await delay(getRandomIntBetween(3000, 5000));
+      //   const sendMsgSelector = 'table > tbody > tr > td > input[value="Send"]';
+      //   const checkExistSendMsg = await checkExistElement(
+      //     page,
+      //     sendMsgSelector,
+      //     3
+      //   );
+      //   if (checkExistSendMsg != 1) {
+      //     throw Error("no element exists to send message");
+      //   }
+      //   await clickElement(page, sendMsgSelector);
+      //   await delay(getRandomIntBetween(3000, 5000));
+      //   countMsg++;
+      // }
       await delay(getRandomIntBetween(3000, 5000));
       console.log("Count friend send msg", countFriend + 1);
       countFriend++;

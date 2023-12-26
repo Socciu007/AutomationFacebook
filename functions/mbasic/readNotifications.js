@@ -4,19 +4,21 @@ import { getElement } from "../../helpers/puppeteer.js";
 
 async function readNotifications(page, numsProfiles) {
   const objNotifications = {
-    numsNoti: 3,
+    numsNoti: 2,
     waitTime: 15,
-    viewOptions: "random",
+    viewOptions: "randomly",
   };
   try {
     let countNoti = 0;
     const waitTimeMs = objNotifications.waitTime * 1000;
     while (countNoti < objNotifications.numsNoti) {
+      // wait time before read noti
       const startTime = new Date();
       let currentTime = new Date();
       while (currentTime - startTime < waitTimeMs / numsProfiles) {
         currentTime = new Date();
       }
+
       // tim nut thong bao và click sang trang thong bao
       let hrefsNoti = await page.$$eval("a", links => links.map(a => a.href));
       if (hrefsNoti.length > 0) {
@@ -38,11 +40,13 @@ async function readNotifications(page, numsProfiles) {
         }
       }
       await delay(getRandomIntBetween(3000, 5000));
+
       // check sang trang notification ?
       let url = await page.url();
       if (!url.includes("/notifications")) {
         throw Error("Notification page has not been loaded");
       }
+
       // tim tat ca thong bao và click xem chi tiet thong bao
       let hrefsDetailsNoti = await page.$$eval("a", links =>
         links.map(a => a.href)
@@ -52,40 +56,70 @@ async function readNotifications(page, numsProfiles) {
           e.includes("/a/notifications")
         );
         const randomIndex = Math.floor(Math.random() * hrefsDetailsNoti.length);
-        const href = hrefsDetailsNoti[randomIndex];
-        const notiDetailsSelector = `[href="${href.replace(
-          "https://mbasic.facebook.com",
-          ""
-        )}"]`;
-        const checknotiDetailsBtn = await checkExistElement(
-          page,
-          notiDetailsSelector,
-          3
-        );
-        if (checknotiDetailsBtn != 1) {
-          throw Error("Element notification details is not exist");
-        }
-        const notiDetailsBtn = await getElement(page, notiDetailsSelector);
-        if (notiDetailsBtn) {
-          await notiDetailsBtn.click();
+
+        if (objNotifications.viewOptions == "randomly") {
+          const href = hrefsDetailsNoti[randomIndex];
+          const notiDetailsSelector = `[href="${href.replace(
+            "https://mbasic.facebook.com",
+            ""
+          )}"]`;
+          const checknotiDetailsBtn = await checkExistElement(
+            page,
+            notiDetailsSelector,
+            3
+          );
+          if (checknotiDetailsBtn != 1) {
+            throw Error("Element notification details is not exist");
+          }
+          const notiDetailsBtn = await getElement(page, notiDetailsSelector);
+          if (notiDetailsBtn) {
+            await notiDetailsBtn.click();
+          } else {
+            throw Error("Can not click into notification details");
+          }
         } else {
-          throw Error("Can not click into notification details");
+          const href = hrefsDetailsNoti[countNoti];
+          const notiDetailsSelector = `[href="${href.replace(
+            "https://mbasic.facebook.com",
+            ""
+          )}"]`;
+          const checknotiDetailsBtn = await checkExistElement(
+            page,
+            notiDetailsSelector,
+            3
+          );
+          if (checknotiDetailsBtn != 1) {
+            throw Error("Element notification details is not exist");
+          }
+          const notiDetailsBtn = await getElement(page, notiDetailsSelector);
+          if (notiDetailsBtn) {
+            await notiDetailsBtn.click();
+          } else {
+            throw Error("Can not click into notification details");
+          }
         }
       } else {
         throw Error("No notification to read");
       }
       await delay(getRandomIntBetween(3000, 5000));
+
       // return page home after read notification
-      const homeSelector = "#header > table > tbody > tr > td > a";
-      const checkHomeSelector = await checkExistElement(page, homeSelector, 3);
-      if (checkHomeSelector != 1) {
-        throw Error("Element home facebook is not exist");
-      }
-      const homeBtn = await getElement(page, homeSelector, 10);
-      if (homeBtn) {
-        await homeBtn.click();
-      } else {
-        throw Error("Can not click into home facebook");
+      if (countNoti + 1 < objNotifications.numsNoti) {
+        const homeSelector = "#header > table > tbody > tr > td > a";
+        const checkHomeSelector = await checkExistElement(
+          page,
+          homeSelector,
+          3
+        );
+        if (checkHomeSelector != 1) {
+          throw Error("Element home facebook is not exist");
+        }
+        const homeBtn = await getElement(page, homeSelector, 10);
+        if (homeBtn) {
+          await homeBtn.click();
+        } else {
+          throw Error("Can not click into home facebook");
+        }
       }
       await delay(getRandomIntBetween(3000, 5000));
       console.log("so thong bao da doc", countNoti + 1);

@@ -44,6 +44,7 @@ const storeSchema = new mongoose.Schema({
   description: { type: String, required: true },
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 });
+const Store = mongoose.model("Store", storeSchema);
 //Order
 const orderSchema = new mongoose.Schema(
   {
@@ -112,7 +113,7 @@ const reviewsSchema = new mongoose.Schema(
 );
 const Reviews = mongoose.model("Reviews", reviewsSchema);
 //Search
-const searchSchema = mongoose.Schema(
+const searchSchema = new mongoose.Schema(
   {
     keyword: { type: String, required: true },
     product: {
@@ -132,7 +133,7 @@ const searchSchema = mongoose.Schema(
 );
 const Search = mongoose.model("Search", searchSchema);
 //Blogs
-const blogSchema = mongoose.Schema(
+const blogSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     header: { type: String, required: true },
@@ -150,7 +151,7 @@ const blogSchema = mongoose.Schema(
 );
 const Blogs = mongoose.model("Blogs", blogSchema);
 //Vouchers
-const voucherSchema = mongoose.Schema(
+const voucherSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     maxUser: { type: Number, required: true },
@@ -179,4 +180,13 @@ const voucherSchema = mongoose.Schema(
 );
 const Vouchers = mongoose.model("Vouchers", voucherSchema);
 
-module.exports = { User, Product, Order, Reviews, Search, Blogs, Vouchers };
+module.exports = {
+  User,
+  Product,
+  Order,
+  Reviews,
+  Search,
+  Blogs,
+  Vouchers,
+  Store,
+};
