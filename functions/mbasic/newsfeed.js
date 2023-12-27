@@ -5,48 +5,35 @@ import {
   getElement,
   getRandomInt,
   getRandomIntBetween,
-  getElements
+  getElements,
 } from "../../helpers/puppeteer.js";
 import checkExistElement from "../../helpers/checkExistElement.js";
 
 let newsfeed = {
-          scrollingTime: {
-            start: 5,
-            end: 10,
-          },
-          delayTime: {
-            start: 3,
-            end: 5,
-          },
-          randomLike: {
-            isClicked: false,
-            start: 5,
-            end: 10,
-          },
-          shareToFeed: {
-            isClicked: false,
-            start: 2,
-            end: 3,
-          },
-          randomComment: {
-            isClicked: true,
-            start: 5,
-            end: 10,
-            content: ["Ý nghĩa", "Tuyệt vời"],
-          },
-        };
+  scrollTimeStart: 5,
+  scrollTimeEnd: 10,
+  delayTimeStart: 5,
+  delayTimeEnd: 10,
+  randomLike: false,
+  likeStart: 5,
+  likeEnd: 10,
+  randomShare: false,
+  shareStart: 1,
+  shareEnd: 2,
+  randomComment: false,
+  commentStart: 1,
+  commentEnd: 2,
+  commentStrs: [],
+};
 
 async function interactWithNewsfeed(page, newsfeed) {
-  if (newsfeed.randomLike.isClicked == true) {
+  if (newsfeed.randomLike == true) {
     let count = 0;
-    let numLikes = getRandomIntBetween(
-      newsfeed.randomLike.start,
-      newsfeed.randomLike.end
-    );
+    let numLikes = getRandomIntBetween(newsfeed.likeStart, newsfeed.likeEnd);
     while (count < numLikes) {
       try {
-        await scroll(page, newsfeed.scrollingTime, newsfeed.delayTime);
-        const result = await randomLikePost(page, newsfeed.delayTime);
+        await scroll(page, newsfeed);
+        const result = await randomLikePost(page, newsfeed);
         if (result != 0) {
           count++;
         }
@@ -55,38 +42,35 @@ async function interactWithNewsfeed(page, newsfeed) {
         break;
       }
     }
-    
   }
 
-  if (newsfeed.shareToFeed.isClicked == true) {
+  if (newsfeed.randomShare == true) {
     let count = 0;
     let numShares = getRandomIntBetween(
-      newsfeed.shareToFeed.start,
-      newsfeed.shareToFeed.end
+      newsfeed.shareStart,
+      newsfeed.shareEnd
     );
     while (count < numShares) {
-      await scroll(page, newsfeed.scrollingTime, newsfeed.delayTime);
-      const result = await share(page, newsfeed.delayTime);
+      await scroll(page, newsfeed);
+      const result = await share(page, newsfeed);
       if (result != 0) {
         count++;
         console.log("Đã share được ", count, " bài");
       }
     }
-    console.log(shareToFeed);
   }
 
   if (newsfeed.randomComment.isClicked == true) {
     const numComments = getRandomIntBetween(
-      newsfeed.randomComment.start,
-      newsfeed.randomComment.end
+      newsfeed.commentStart,
+      newsfeed.commentEnd
     );
     let count = 0;
     while (count < numComments) {
-      await scroll(page, newsfeed.scrollingTime, newsfeed.delayTime);
+      await scroll(page, newsfeed);
       const result = await comment(
         page,
-        newsfeed.randomComment.content,
-        newsfeed.delayTime
+        newsfeed
       );
       if (result > 0) {
         count++;
@@ -96,15 +80,15 @@ async function interactWithNewsfeed(page, newsfeed) {
   }
 }
 
-async function scroll(page, scrollingTime, delayTime) {
+async function scroll(page, newsfeed) {
   let randomScrollTime = getRandomIntBetween(
-    scrollingTime.start * 1000,
-    scrollingTime.end * 1000
+   newsfeed.scrollTimeStart * 1000,
+    newsfeed.scrollTimeEnd * 1000
   );
   let scrollAmount = getRandomIntBetween(300, 500);
   let randomDelay = getRandomIntBetween(
-    delayTime.start * 1000,
-    delayTime.end * 1000
+    newsfeed.delayTimeStart * 1000,
+    newsfeed.delayTimeEnd * 1000
   );
   try {
     while (randomScrollTime > 0) {
@@ -129,7 +113,6 @@ async function scroll(page, scrollingTime, delayTime) {
     console.log(error);
   }
 }
-
 async function findReactBtn(page) {
   try {
     let hrefs = await page.$$eval("a", (links) => links.map((a) => a.href));
@@ -180,11 +163,11 @@ async function clickLike(page) {
     console.log(error);
   }
 }
-async function randomLikePost(page, delayTime) {
+async function randomLikePost(page, newsfeed) {
   try {
     let count = 0;
     await findReactBtn(page);
-    let randomDelay = getRandomIntBetween(delayTime.start, delayTime.end);
+    let randomDelay = getRandomIntBetween(newsfeed.delayTimeStart, newsfeed.delayTimeEnd);
     await delay(randomDelay);
     const result = await clickLike(page);
     if (result != 0) {
@@ -249,11 +232,11 @@ async function clickShare(page) {
     throw error;
   }
 }
-async function share(page, delayTime) {
+async function share(page, newsfeed) {
   try {
     let temp = 0;
     await findShareBtn(page);
-    let randomDelay = getRandomIntBetween(delayTime.start, delayTime.end);
+    let randomDelay = getRandomIntBetween(newsfeed.delayTimeStart, newsfeed.delayTimeEnd);
     await delay(randomDelay);
     const result = await clickShare(page);
     if (result != 0) {
@@ -266,14 +249,14 @@ async function share(page, delayTime) {
     throw error;
   }
 }
-async function comment(page, content, delayTime) {
+async function comment(page, newsfeed) {
   try {
     let temp = 0;
     await findCommentBtn(page);
-    let randomDelay = getRandomIntBetween(delayTime.start, delayTime.end);
+    let randomDelay = getRandomIntBetween(newsfeed.delayTimeStart, newsfeed.delayTimeEnd);
     await delay(randomDelay);
-    await clickComment(page, content);
-    let randomDelay1 = getRandomIntBetween(delayTime.start, delayTime.end);
+    await clickComment(page, newsfeed.commentStrs);
+    let randomDelay1 = getRandomIntBetween(newsfeed.delayTimeStart, newsfeed.delayTimeEnd);
     await delay(randomDelay1);
     const result = await clickPostComment(page);
     if (result == 1) {
@@ -287,27 +270,27 @@ async function comment(page, content, delayTime) {
 }
 async function findCommentBtn(page) {
   try {
-     let hrefs = await page.$$eval("a", (links) => links.map((a) => a.href));
-     if (hrefs.length > 0) {
-       hrefs = hrefs.filter((e) => e.includes("/story.php?story_fbid"));
-       const randomIndex = getRandomInt(hrefs.length);
-       const href = hrefs[randomIndex];
-       const commentSelector = `[href="${href.replace(
-         "https://mbasic.facebook.com",
-         ""
-       )}"]`;
-       const checkCommentBtn = await checkExistElement(page, commentSelector, 3);
-       if (checkCommentBtn != 1) {
-         throw new Error("Can't find comment button");
-       }
-       console.log("Co nut comment");
-       await scrollSmoothIfNotExistOnScreen(page, commentSelector);
-       const commentBtn = await getElement(page, commentSelector);
-       if (commentBtn) {
-         await commentBtn.click();
-       }
-       await delay(5000)
-     }
+    let hrefs = await page.$$eval("a", (links) => links.map((a) => a.href));
+    if (hrefs.length > 0) {
+      hrefs = hrefs.filter((e) => e.includes("/story.php?story_fbid"));
+      const randomIndex = getRandomInt(hrefs.length);
+      const href = hrefs[randomIndex];
+      const commentSelector = `[href="${href.replace(
+        "https://mbasic.facebook.com",
+        ""
+      )}"]`;
+      const checkCommentBtn = await checkExistElement(page, commentSelector, 3);
+      if (checkCommentBtn != 1) {
+        throw new Error("Can't find comment button");
+      }
+      console.log("Co nut comment");
+      await scrollSmoothIfNotExistOnScreen(page, commentSelector);
+      const commentBtn = await getElement(page, commentSelector);
+      if (commentBtn) {
+        await commentBtn.click();
+      }
+      await delay(5000);
+    }
   } catch (error) {
     console.log(error);
     throw error;
@@ -322,8 +305,8 @@ async function clickComment(page, content) {
   }
   await scrollSmoothIfNotExistOnScreen(page, commentArea);
   await delay(3000);
-  const textarea = await getElement(page,commentArea,10)
-  await textarea.click(); 
+  const textarea = await getElement(page, commentArea, 10);
+  await textarea.click();
   if (content.length > 0) {
     const randomIndex = getRandomInt(content.length);
     const text = content[randomIndex];

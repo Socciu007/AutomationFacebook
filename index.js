@@ -50,8 +50,8 @@ async function navigateToUrl(page, link) {
           numRequestEnd: 4,
           delayTimeStart: 3,
           delayTimeEnd: 5,
-          unfriendOption: "random", //UID
-          listUID: []
+          unfriendOption: "UID", //UID
+          listUID: ["61555113260133", "thanhcong.vu.353"],
         };
         await cancelFriend(page, cancelFriendObj);
       } else {

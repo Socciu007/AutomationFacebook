@@ -6,7 +6,7 @@ import {
   getElements,
   getRandomInt,
   getRandomIntBetween,
-  waitForNavigation
+  waitForNavigation,
 } from "../../helpers/puppeteer.js";
 import checkExistElement from "../../helpers/checkExistElement.js";
 
@@ -65,6 +65,19 @@ async function cancelFriend(page, cancelFriend) {
     if (cancelFriend.unfriendOption == "UID") {
       while (count < numCancel) {
         try {
+          const randomIndex = getRandomInt(cancelFriend.listUID.length);
+          let uid = cancelFriend.listUID[randomIndex];
+          await delay(randomDelay);
+          await page.goto(`https://mbasic.facebook.com/profile.php?id=${uid}`);
+          await clickMore(page);
+          await delay(randomDelay);
+          await clickCancel(page);
+          await delay(randomDelay);
+          await confirm(page);
+          await delay(randomDelay);
+          count++;
+          await page.goto("https://mbasic.facebook.com/profile.php?v=friends");
+          await delay(randomDelay);
         } catch (error) {
           console.log(error);
           break;
@@ -188,17 +201,25 @@ async function chooseOneFriend(page) {
 }
 async function clickMore(page) {
   try {
-    let moreSelector =
-      "#m-timeline-cover-section > div > table > tbody > tr > td:nth-child(2) > a";
-    const check = await checkExistElement(page, moreSelector, 3);
-    console.log(check);
-    if (check != 1) {
-      throw new Error("Can't find friend button");
-    }
-    await scrollSmoothIfNotExistOnScreen(page, moreSelector);
-    const moreBtn = await getElement(page, moreSelector);
-    if (moreBtn) {
-      await moreBtn.click();
+    let hrefs = await page.$$eval("a", (links) => links.map((a) => a.href));
+    if (hrefs.length > 0) {
+      hrefs = hrefs.filter((e) => e.includes("/mbasic/more/"));
+      const randomIndex = getRandomInt(hrefs.length);
+      const href = hrefs[randomIndex];
+      const moreSelector = `[href="${href.replace(
+        "https://mbasic.facebook.com",
+        ""
+      )}"]`;
+      const check = await checkExistElement(page, moreSelector, 3);
+      console.log(check);
+      if (check != 1) {
+        throw new Error("Can't find more button");
+      }
+      await scrollSmoothIfNotExistOnScreen(page, moreSelector);
+      const moreBtn = await getElement(page, moreSelector);
+      if (moreBtn) {
+        await moreBtn.click();
+      }
     }
   } catch (error) {
     console.log(error);
@@ -246,4 +267,5 @@ async function confirm(page) {
     throw error;
   }
 }
+
 export default cancelFriend;
