@@ -5,6 +5,7 @@ import {
   getElement,
   getRandomInt,
   getRandomIntBetween,
+  getElements
 } from "../../helpers/puppeteer.js";
 import checkExistElement from "../../helpers/checkExistElement.js";
 
@@ -54,7 +55,7 @@ async function interactWithNewsfeed(page, newsfeed) {
         break;
       }
     }
-    console.log("Da like du bai");
+    
   }
 
   if (newsfeed.shareToFeed.isClicked == true) {

@@ -3,6 +3,7 @@ import puppeteer from "puppeteer-core";
 import delay from "./helpers/delay.js";
 import checkIsLive from "./helpers/checkIsLive.js";
 import interactWithNewsfeed from "./functions/mbasic/newsfeed.js";
+import cancelFriend from "./functions/mbasic/cancelFriend.js";
 const hideMyAcc = new Hidemyacc();
 async function navigateToUrl(page, link) {
   try {
@@ -23,7 +24,7 @@ async function navigateToUrl(page, link) {
   const profiles = await hideMyAcc.profiles();
   // console.log(profiles);
   try {
-    const tabPromises = profiles.data.map(async profile => {
+    const tabPromises = profiles.data.map(async (profile) => {
       const response = await hideMyAcc.start(profile.id);
       if (!response) {
         throw new Error(
@@ -43,8 +44,16 @@ async function navigateToUrl(page, link) {
         const url = "https://mbasic.facebook.com/";
         await navigateToUrl(page, url);
         await delay(5000);
-
-        await interactWithNewsfeed(page,newsfeed)
+        let cancelFriendObj = {
+          selectedOption: "cancelRequest, unfriend",
+          numRequestStart: 2,
+          numRequestEnd: 4,
+          delayTimeStart: 3,
+          delayTimeEnd: 5,
+          unfriendOption: "random,UID",
+          listUID: [],
+        };
+        await cancelFriend(page, cancelFriendObj);
       } else {
         console.log("page crashed");
       }
