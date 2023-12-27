@@ -36,39 +36,24 @@ async function cancelFriend(page, cancelFriend) {
     }
   }
   if (cancelFriend.selectedOption == "unfriend") {
-    let count = 0;
-    await delay(randomDelay);
-    await clickHomePage(page);
-    await delay(randomDelay);
-    await clickFriend(page);
-    await delay(randomDelay);
     if (cancelFriend.unfriendOption == "random") {
+      let count = 0;
+      await delay(randomDelay);
+      await clickHomePage(page);
+      await delay(randomDelay);
+      await clickFriend(page);
+      await delay(randomDelay);
       while (count < numCancel) {
-        try {
-          await chooseOneFriend(page);
-          await delay(randomDelay);
-          await clickMore(page);
-          await delay(randomDelay);
-          await clickCancel(page);
-          await delay(randomDelay);
-          await confirm(page);
-          await delay(randomDelay);
-          count++;
-          await page.goto("https://mbasic.facebook.com/profile.php?v=friends");
-          await delay(randomDelay);
-        } catch (error) {
-          console.log(error);
-          break;
-        }
-      }
-    }
-    if (cancelFriend.unfriendOption == "UID") {
-      while (count < numCancel) {
-        try {
-        } catch (error) {
-          console.log(error);
-          break;
-        }
+        await chooseOneFriend(page);
+        await delay(randomDelay);
+        await clickMore(page);
+        await delay(randomDelay);
+        await clickCancel(page);
+        await delay(randomDelay);
+        await confirm(page);
+        await delay(randomDelay);
+        await page.goto("https://mbasic.facebook.com/profile.php?v=friends");
+        await delay(randomDelay);
       }
     }
   }
@@ -229,7 +214,7 @@ async function clickCancel(page) {
 }
 async function confirm(page) {
   try {
-    let confirmSelector = 'input[name="confirm"]';
+    let confirmSelector = " #root > div > form > div > input.bp.bq";
     const check = await checkExistElement(page, confirmSelector, 3);
     console.log(check);
     if (check != 1) {

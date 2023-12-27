@@ -45,12 +45,12 @@ async function navigateToUrl(page, link) {
         await navigateToUrl(page, url);
         await delay(5000);
         let cancelFriendObj = {
-          selectedOption: "unfriend", // cancelRequest
+          selectedOption: "unfriend", // cancelRequest,
           numRequestStart: 2,
           numRequestEnd: 4,
           delayTimeStart: 3,
           delayTimeEnd: 5,
-          unfriendOption: "random", //UID
+          unfriendOption: "random,UID",
           listUID: []
         };
         await cancelFriend(page, cancelFriendObj);

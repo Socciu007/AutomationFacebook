@@ -63,13 +63,7 @@ async function cancelFriend(page, cancelFriend) {
       }
     }
     if (cancelFriend.unfriendOption == "UID") {
-      while (count < numCancel) {
-        try {
-        } catch (error) {
-          console.log(error);
-          break;
-        }
-      }
+      while (count < numCancel) {}
     }
   }
 }

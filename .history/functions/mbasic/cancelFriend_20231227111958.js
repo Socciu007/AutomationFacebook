@@ -36,39 +36,24 @@ async function cancelFriend(page, cancelFriend) {
     }
   }
   if (cancelFriend.selectedOption == "unfriend") {
-    let count = 0;
-    await delay(randomDelay);
-    await clickHomePage(page);
-    await delay(randomDelay);
-    await clickFriend(page);
-    await delay(randomDelay);
     if (cancelFriend.unfriendOption == "random") {
+      let count = 0;
+      await delay(randomDelay);
+      await clickHomePage(page);
+      await delay(randomDelay);
+      await clickFriend(page);
+      await delay(randomDelay);
       while (count < numCancel) {
-        try {
-          await chooseOneFriend(page);
-          await delay(randomDelay);
-          await clickMore(page);
-          await delay(randomDelay);
-          await clickCancel(page);
-          await delay(randomDelay);
-          await confirm(page);
-          await delay(randomDelay);
-          count++;
-          await page.goto("https://mbasic.facebook.com/profile.php?v=friends");
-          await delay(randomDelay);
-        } catch (error) {
-          console.log(error);
-          break;
-        }
-      }
-    }
-    if (cancelFriend.unfriendOption == "UID") {
-      while (count < numCancel) {
-        try {
-        } catch (error) {
-          console.log(error);
-          break;
-        }
+        await chooseOneFriend(page);
+        await delay(randomDelay);
+        await clickMore(page);
+        await delay(randomDelay);
+        await clickCancel(page);
+        await delay(randomDelay);
+        await confirm(page);
+        await delay(randomDelay);
+        await page.goto("https://mbasic.facebook.com/profile.php?v=friends");
+        await delay(randomDelay);
       }
     }
   }
@@ -208,7 +193,7 @@ async function clickMore(page) {
 async function clickCancel(page) {
   try {
     let cancelSelector =
-      "#root > table > tbody > tr > td > section > ul > li:nth-child(1) > a";
+      "#root > table > tbody > tr > td > section > ul > li:nth-child(1)";
     const check = await checkExistElement(page, cancelSelector, 3);
     console.log(check);
     if (check != 1) {
@@ -216,9 +201,10 @@ async function clickCancel(page) {
     }
     const cancelBtn = await getElement(page, cancelSelector);
     if (!cancelBtn) {
+      await cancelBtn.click();
       console.log("Fail");
     }
-    await scrollSmoothIfNotExistOnScreen(page, cancelSelector);
+    await scrollSmoothIfNotExistOnScreen(page, moreSelector);
     await cancelBtn.click();
     console.log("click");
     await delay(5000);
@@ -229,7 +215,7 @@ async function clickCancel(page) {
 }
 async function confirm(page) {
   try {
-    let confirmSelector = 'input[name="confirm"]';
+    let confirmSelector = " #root > div > form > input:nth-child(1)";
     const check = await checkExistElement(page, confirmSelector, 3);
     console.log(check);
     if (check != 1) {

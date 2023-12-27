@@ -10,7 +10,7 @@ async function navigateToUrl(page, link) {
     const url = await page.url();
     if (!url.includes(link)) {
       await page.goto(link, {
-        waitUntil: "networkidle2"
+        waitUntil: "networkidle2",
       });
     } else {
       console.log("cant navigate");
@@ -34,7 +34,7 @@ async function navigateToUrl(page, link) {
       const browser = await puppeteer.connect({
         browserWSEndpoint: response.data.wsUrl,
         defaultViewport: null,
-        slowMo: 60
+        slowMo: 60,
       });
       await delay(1000);
       // console.log(err)
@@ -45,13 +45,13 @@ async function navigateToUrl(page, link) {
         await navigateToUrl(page, url);
         await delay(5000);
         let cancelFriendObj = {
-          selectedOption: "unfriend", // cancelRequest
+          selectedOption: "cancelRequest, unfriend",
           numRequestStart: 2,
           numRequestEnd: 4,
           delayTimeStart: 3,
           delayTimeEnd: 5,
-          unfriendOption: "random", //UID
-          listUID: []
+          unfriendOption: "random,UID",
+          listUID: [],
         };
         await cancelFriend(page, cancelFriendObj);
       } else {

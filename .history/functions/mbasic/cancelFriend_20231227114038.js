@@ -44,32 +44,21 @@ async function cancelFriend(page, cancelFriend) {
     await delay(randomDelay);
     if (cancelFriend.unfriendOption == "random") {
       while (count < numCancel) {
-        try {
-          await chooseOneFriend(page);
-          await delay(randomDelay);
-          await clickMore(page);
-          await delay(randomDelay);
-          await clickCancel(page);
-          await delay(randomDelay);
-          await confirm(page);
-          await delay(randomDelay);
-          count++;
-          await page.goto("https://mbasic.facebook.com/profile.php?v=friends");
-          await delay(randomDelay);
-        } catch (error) {
-          console.log(error);
-          break;
-        }
+        await chooseOneFriend(page);
+        await delay(randomDelay);
+        await clickMore(page);
+        await delay(randomDelay);
+        await clickCancel(page);
+        await delay(randomDelay);
+        await confirm(page);
+        await delay(randomDelay);
+        count++;
+        await page.goto("https://mbasic.facebook.com/profile.php?v=friends");
+        await delay(randomDelay);
       }
     }
     if (cancelFriend.unfriendOption == "UID") {
-      while (count < numCancel) {
-        try {
-        } catch (error) {
-          console.log(error);
-          break;
-        }
-      }
+      while (count < numCancel) {}
     }
   }
 }
