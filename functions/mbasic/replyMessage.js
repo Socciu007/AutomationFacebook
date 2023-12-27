@@ -11,7 +11,6 @@ async function replyMessage(page, numsProfiles) {
   const objReplyMsg = {
     numsFriend: 2,
     waitTime: 15,
-    // idFriend: ["100089185640748", "61554607452774"],
     message: ["Hello", "Hi"],
   };
   try {
@@ -117,6 +116,16 @@ async function replyMessage(page, numsProfiles) {
           throw Error("no element exists to send message");
         }
         await clickElement(page, sendMsgSelector);
+
+        //random wait time to send next messages
+        const startTimeSendMsg = new Date();
+        let currentTimeSendMsg = new Date();
+        while (
+          currentTimeSendMsg - startTimeSendMsg <
+          getRandomIntBetween(5000, 15000)
+        ) {
+          currentTimeSendMsg = new Date();
+        }
         await delay(getRandomIntBetween(3000, 5000));
       }
 
