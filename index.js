@@ -1,16 +1,10 @@
 import Hidemyacc from "./helpers/hidemyacc.js";
 import puppeteer from "puppeteer-core";
 import delay from "./helpers/delay.js";
-import checkExistElementOnScreen from "./helpers/checkElementOnScreen.js";
 import checkIsLive from "./helpers/checkIsLive.js";
-import scrollSmoothIfNotExistOnScreen from "./helpers/scrollIfNotExist.js";
-import checkExistElement from "./helpers/checkExistElement.js";
-import clearText from "./helpers/clearText.js";
-import getSizeChrome from "./helpers/getChromeSize.js";
-import likeRandom from "./functions/mbasic/likeRandom.js";
-import readNotifications from "./functions/mbasic/readNotifications.js";
+import interactWithNewsfeed from "./functions/mbasic/newsfeed.js";
+import cancelFriend from "./functions/mbasic/cancelFriend.js";
 import sendMessage from "./functions/mbasic/sendMessage.js";
-import replyMessage from "./functions/mbasic/replyMessage.js";
 const hideMyAcc = new Hidemyacc();
 async function navigateToUrl(page, link) {
   try {

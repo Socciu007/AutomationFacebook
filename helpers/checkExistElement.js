@@ -1,6 +1,6 @@
 import delay from "./delay.js";
 import checkIsLive from "./checkIsLive.js";
-async function checkExistElement(page, JSpath, timeWait_Second = 1) {
+async function checkExistElement(page, JSpath, timeWait_Second) {
   let flag = true;
   try {
     const tickCount = Date.now();

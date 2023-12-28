@@ -4,14 +4,19 @@ import { getElement } from "../../helpers/puppeteer.js";
 
 async function readNotifications(page, numsProfiles) {
   const objNotifications = {
-    numsNoti: 2,
+    numsNotiStart: 2,
+    numsNotiEnd: 5,
     waitTime: 15,
     viewOptions: "randomly",
   };
   try {
     let countNoti = 0;
+    const numsNoti = getRandomIntBetween(
+      objNotifications.numsNotiStart,
+      objNotifications.numsNotiEnd
+    );
     const waitTimeMs = objNotifications.waitTime * 1000;
-    while (countNoti < objNotifications.numsNoti) {
+    while (countNoti < numsNoti) {
       // wait time before read noti
       const startTime = new Date();
       let currentTime = new Date();

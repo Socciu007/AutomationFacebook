@@ -10,16 +10,25 @@ import scrollSmoothIfNotExistOnScreen from "../../helpers/scrollIfNotExist.js";
 
 async function sendMessage(page, numsProfiles) {
   const objSendMessage = {
-    numsFriend: 2,
+    numsFriendStart: 2,
+    numsFriendEnd: 5,
     waitTime: 15,
-    idFriend: ["100089185640748", "61554607452774"],
-    // idFriend: [],
+    // idFriend: ["61554607452774", "100089185640748"],
+    idFriend: [],
     message: ["Hello", "Hi"],
   };
   try {
     let countFriend = 0;
+    const numsFriendRandom = getRandomIntBetween(
+      objSendMessage.numsFriendStart,
+      objSendMessage.numsFriendEnd
+    );
+    const numsFriend =
+      objSendMessage.idFriend.length !== 0
+        ? objSendMessage.idFriend.length
+        : numsFriendRandom;
     const waitTimeMs = objSendMessage.waitTime * 1000;
-    while (countFriend < objSendMessage.numsFriend) {
+    while (countFriend < numsFriend) {
       // wait time before send msg
       const startTime = new Date();
       let currentTime = new Date();
@@ -60,44 +69,12 @@ async function sendMessage(page, numsProfiles) {
         }
 
         // select msg to send and send msg
-        for (const msg of objSendMessage.message) {
-          const inputMsgSelector = "table > tbody > tr > td > textarea";
-          const checkExistInputMsg = await checkExistElement(
-            page,
-            inputMsgSelector,
-            3
-          );
-          if (checkExistInputMsg != 1) {
-            throw Error("no element exists to enter message");
-          }
-          await page.type(inputMsgSelector, msg);
-          await delay(getRandomIntBetween(3000, 5000));
-
-          const sendMsgSelector =
-            'table > tbody > tr > td > input[value="Send"]';
-          const checkExistSendMsg = await checkExistElement(
-            page,
-            sendMsgSelector,
-            3
-          );
-          if (checkExistSendMsg != 1) {
-            throw Error("no element exists to send message");
-          }
-          await clickElement(page, sendMsgSelector);
-          await delay(getRandomIntBetween(3000, 5000));
-
-          //random wait time to send next messages
-          const startTimeSendMsg = new Date();
-          let currentTimeSendMsg = new Date();
-          while (
-            currentTimeSendMsg - startTimeSendMsg <
-            getRandomIntBetween(5000, 15000)
-          ) {
-            console.log("time", currentTimeSendMsg - startTimeSendMsg);
-            currentTimeSendMsg = new Date();
-          }
-          await delay(getRandomIntBetween(3000, 5000));
-        }
+        await sendMsg(
+          page,
+          objSendMessage.message,
+          "table > tbody > tr > td > textarea",
+          'table > tbody > tr > td > input[value="Send"]'
+        );
       } else {
         // access profile page
         let hrefs = await page.$$eval("a", links => links.map(a => a.href));
@@ -111,12 +88,6 @@ async function sendMessage(page, numsProfiles) {
           await accessPageByHref(page, hrefPage, 0, "profile page");
         } else {
           throw Error("No link to access to profile page");
-        }
-
-        // check sang trang profile ?
-        let url = await page.url();
-        if (!url.includes("/profile")) {
-          throw Error("Profile page has not been loaded");
         }
 
         // access friend page
@@ -133,21 +104,58 @@ async function sendMessage(page, numsProfiles) {
         //find special friend to send msg
         hrefs = await page.$$eval("a", links => links.map(a => a.href));
         if (hrefs.length > 0) {
-          console.log("nums friend", hrefs.length);
-          const hrefPage = hrefs.filter(e =>
+          let hrefPage = hrefs.filter(e =>
             e.includes(objSendMessage.idFriend[countFriend])
           );
-          if (hrefPage.length == 0) {
+
+          if (hrefPage.length == 1) {
+            //select special friend
+            const clickSelector = `[href="${hrefPage[0].replace(
+              "https://mbasic.facebook.com",
+              ""
+            )}"]`;
+            const findSpecialFriendBtn = await scrollSmoothIfNotExistOnScreen(
+              page,
+              clickSelector
+            );
+            if (findSpecialFriendBtn == 1) {
+              await accessPageByHref(page, hrefPage, 0, "special friends");
+            }
+
+            // access message of special friend page
+            hrefs = await page.$$eval("a", links => links.map(a => a.href));
+            const hrefMsgOfSpecialFriendPage = hrefs.filter(e =>
+              e.includes("/messages/thread")
+            );
+            await accessPageByHref(
+              page,
+              hrefMsgOfSpecialFriendPage,
+              0,
+              "message"
+            );
+
+            // select msg to send and send msg
+            await sendMsg(
+              page,
+              objSendMessage.message,
+              "table > tbody > tr > td > textarea",
+              'table > tbody > tr > td > input[value="Send"]'
+            );
+          }
+
+          while (hrefPage.length == 0) {
             const moreFriendSelector = "#m_more_friends > a > span";
             const findMoreFriendBtn = await scrollSmoothIfNotExistOnScreen(
               page,
-              clickSelector
+              moreFriendSelector
             );
             if (findMoreFriendBtn == 1) {
               await clickElement(page, moreFriendSelector);
             }
+            await delay(getRandomIntBetween(3000, 5000));
 
-            const hrefPage = hrefs.filter(e =>
+            hrefs = await page.$$eval("a", links => links.map(a => a.href));
+            hrefPage = hrefs.filter(e =>
               e.includes(objSendMessage.idFriend[countFriend])
             );
             const clickSelector = `[href="${hrefPage[0].replace(
@@ -158,23 +166,31 @@ async function sendMessage(page, numsProfiles) {
               page,
               clickSelector
             );
-            console.log("find", findSpecialFriendBtn);
+
             if (findSpecialFriendBtn == 1) {
-              await accessPageByHref(page, hrefPage, 0, "friends page");
+              await accessPageByHref(page, hrefPage, 0, "special friends");
             }
-          } else {
-            const clickSelector = `[href="${hrefPage[0].replace(
-              "https://mbasic.facebook.com",
-              ""
-            )}"]`;
-            const findSpecialFriendBtn = await scrollSmoothIfNotExistOnScreen(
-              page,
-              clickSelector
+
+            // access message of special friend page
+            hrefs = await page.$$eval("a", links => links.map(a => a.href));
+            const hrefMsgOfSpecialFriendPage = hrefs.filter(e =>
+              e.includes("/messages/thread")
             );
-            console.log("find", findSpecialFriendBtn);
-            if (findSpecialFriendBtn == 1) {
-              await accessPageByHref(page, hrefPage, 0, "friends page");
-            }
+            await accessPageByHref(
+              page,
+              hrefMsgOfSpecialFriendPage,
+              0,
+              "message"
+            );
+
+            // select msg to send and send msg
+            await sendMsg(
+              page,
+              objSendMessage.message,
+              "table > tbody > tr > td > textarea",
+              'table > tbody > tr > td > input[value="Send"]'
+            );
+            await delay(getRandomIntBetween(3000, 5000));
           }
         } else {
           throw Error(
@@ -214,6 +230,35 @@ async function accessPageByHref(page, hrefPage, indexHref, namePage) {
     await delay(getRandomIntBetween(3000, 5000));
   } catch (error) {
     console.log(error.message);
+  }
+}
+
+async function sendMsg(page, objMsg, inputSelector, sendSelector) {
+  for (const msg of objMsg) {
+    const checkExistInputMsg = await checkExistElement(page, inputSelector, 3);
+    if (checkExistInputMsg != 1) {
+      throw Error("no element exists to enter message");
+    }
+    await page.type(inputSelector, msg);
+    await delay(getRandomIntBetween(3000, 5000));
+
+    const checkExistSendMsg = await checkExistElement(page, sendSelector, 3);
+    if (checkExistSendMsg != 1) {
+      throw Error("no element exists to send message");
+    }
+    await clickElement(page, sendSelector);
+    await delay(getRandomIntBetween(3000, 5000));
+
+    //random wait time to send next messages
+    const startTimeSendMsg = new Date();
+    let currentTimeSendMsg = new Date();
+    while (
+      currentTimeSendMsg - startTimeSendMsg <
+      getRandomIntBetween(5000, 10000)
+    ) {
+      currentTimeSendMsg = new Date();
+    }
+    await delay(getRandomIntBetween(3000, 5000));
   }
 }
 export default sendMessage;

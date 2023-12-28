@@ -9,15 +9,20 @@ import { getElement } from "../../helpers/puppeteer.js";
 
 async function replyMessage(page, numsProfiles) {
   const objReplyMsg = {
-    numsFriend: 2,
+    numsFriendStart: 2,
+    numsFriendEnd: 5,
     waitTime: 15,
     message: ["Hello", "Hi"],
   };
   try {
     let countFriend = 0;
+    const numsFriend = getRandomIntBetween(
+      objReplyMsg.numsFriendStart,
+      objReplyMsg.numsFriendEnd
+    );
     const waitTimeMs = objReplyMsg.waitTime * 1000;
 
-    while (countFriend < objReplyMsg.numsFriend) {
+    while (countFriend < numsFriend) {
       //wait time before reply msg
       const startTime = new Date();
       let currentTime = new Date();
